@@ -83,10 +83,15 @@ ASGI_APPLICATION = 'config.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_CENTRAL_NAME'),
-        'USER': config('DB_CENTRAL_USER'),
-        'PASSWORD': config('DB_CENTRAL_PASSWORD'),
-        'HOST': config('DB_CENTRAL_HOST'),
+        # Os defaults abaixo só existem para permitir que o Django carregue
+        # as configurações durante o BUILD da imagem Docker (ex: comando
+        # collectstatic, que não precisa de conexão real com o banco).
+        # Em runtime, o EasyPanel injeta os valores reais via variáveis de
+        # ambiente — sempre configure-as lá.
+        'NAME': config('DB_CENTRAL_NAME', default='admstudio_central'),
+        'USER': config('DB_CENTRAL_USER', default='root'),
+        'PASSWORD': config('DB_CENTRAL_PASSWORD', default=''),
+        'HOST': config('DB_CENTRAL_HOST', default='localhost'),
         'PORT': config('DB_CENTRAL_PORT', default='3306'),
         'OPTIONS': {'charset': 'utf8mb4'},
     }
