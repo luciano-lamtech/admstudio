@@ -12,6 +12,11 @@ SECRET_KEY = config('SECRET_KEY', default='dev-secret-key-troque-em-producao')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
+# Domínios com permissão para enviar formulários (proteção CSRF do Django).
+# Precisa ser a URL COMPLETA, com https://, sem caminho no final.
+# Ex: CSRF_TRUSTED_ORIGINS=https://plataformas-admstudio.sqkz99.easypanel.host,https://admstudio.seudominio.com
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -134,3 +139,36 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
+
+# -----------------------------------------------------------------
+# LOGGING: garante que erros apareçam nos logs do container (Docker/
+# EasyPanel) mesmo com DEBUG=False. Por padrão, o Django só imprime
+# erros no console quando DEBUG=True — sem isso, os erros em produção
+# ficariam invisíveis (só tentam ser enviados por e-mail, que não está
+# configurado).
+# -----------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
