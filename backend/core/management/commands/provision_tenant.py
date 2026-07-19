@@ -63,8 +63,23 @@ class Command(BaseCommand):
                 db_port=options['db_port'],
             )
         )
+
+        if not created:
+            # Tenant já existia: atualiza os dados com o que foi passado
+            # agora, para não ficar preso em credenciais antigas/erradas de
+            # uma tentativa anterior.
+            tenant.razao_social = options['razao_social']
+            tenant.nome_fantasia = options['nome_fantasia']
+            tenant.tipo_negocio = options['tipo_negocio']
+            tenant.db_name = options['db_name']
+            tenant.db_host = options['db_host']
+            tenant.db_user = options['db_user']
+            tenant.db_password = options['db_password']
+            tenant.db_port = options['db_port']
+            tenant.save()
+
         self.stdout.write(self.style.SUCCESS(
-            f"Tenant {'criado' if created else 'já existia (reutilizando)'}: {tenant}"
+            f"Tenant {'criado' if created else 'já existia (dados atualizados)'}: {tenant}"
         ))
 
         alias = register_tenant_connection(tenant)
