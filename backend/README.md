@@ -59,19 +59,16 @@ python manage.py provision_tenant \
 
 ## Checklist completo: do zero até o sistema no ar
 
-1. **Gerar as migrações** (ainda não foram geradas neste scaffold):
-   ```bash
-   python manage.py makemigrations core accounts dashboard clientes
-   ```
-2. **Criar o banco MySQL central** na nuvem (ex: `admstudio_central`) e
+1. **Criar o banco MySQL central** na nuvem (ex: `admstudio_central`) e
    preencher o `.env` com as credenciais dele.
-3. **Rodar as migrações do banco central**:
+2. **Rodar as migrações do banco central** (as migrações já vêm prontas no
+   repositório, não precisa rodar `makemigrations`):
    ```bash
    python manage.py migrate          # cria a tabela "tenants"
    python manage.py createsuperuser  # acesso ao /admin/
    ```
-4. **Criar um banco MySQL para o primeiro cliente** (tenant) na nuvem.
-5. **Provisionar esse tenant** com o comando `provision_tenant` acima.
+3. **Criar um banco MySQL para o primeiro cliente** (tenant) na nuvem.
+4. **Provisionar esse tenant** com o comando `provision_tenant` acima.
 6. **Testar localmente**: `python manage.py runserver` + rodar o frontend
    (`npm start` no repo `admstudio-frontend`) e logar com o email/senha/CNPJ
    criados no passo 5.

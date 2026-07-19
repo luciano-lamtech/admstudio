@@ -86,7 +86,7 @@ class Command(BaseCommand):
         set_current_tenant_alias(alias)
 
         self.stdout.write('Rodando migrações no banco do tenant...')
-        for app in ['accounts', 'dashboard', 'clientes']:
+        for app in ['accounts', 'clientes']:
             call_command('migrate', app, database=alias, interactive=False, verbosity=1)
 
         # Perfis de acesso padrão
