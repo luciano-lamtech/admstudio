@@ -92,7 +92,43 @@ tudo (backend + frontend, servidos juntos pelo Django) fica na **raiz do
 monorepo**, não aqui dentro. Veja o `README.md` na raiz do repositório para
 as instruções completas de deploy.
 
-## Módulos já implementados
+## Fluxo de trabalho: evoluindo o sistema (novos campos, tabelas, módulos)
+
+Sempre que você alterar um model de um app de **tenant** (`accounts`,
+`clientes`, ou um módulo novo que criarmos, tipo `agendamentos`), siga
+estes passos:
+
+1. **Altere o `models.py`** do app (novo campo, novo model, etc.)
+2. **Gere a migração** (pode ser localmente, se tiver Python/Django
+   instalado, ou pelo Console do EasyPanel, mas **sempre baixe e
+   `git commit` o arquivo gerado** em `<app>/migrations/`, senão ele se
+   perde no próximo deploy):
+   ```bash
+   python manage.py makemigrations accounts clientes
+   ```
+3. **Suba pro GitHub e implante** no EasyPanel normalmente.
+4. **Aplique a migração em TODOS os assinantes já existentes**, com o
+   comando feito especialmente pra isso:
+   ```bash
+   python manage.py migrate_all_tenants
+   ```
+   Ele percorre a lista de tenants cadastrados no banco central e aplica
+   as migrações pendentes no banco de cada um, automaticamente.
+
+   Se você criou um **módulo novo** (novo app, tipo `agendamentos`),
+   inclua-o explicitamente:
+   ```bash
+   python manage.py migrate_all_tenants --apps accounts clientes agendamentos
+   ```
+
+5. **Tenants criados depois** (via `provision_tenant`) já recebem
+   automaticamente TODAS as migrações existentes até aquele momento —
+   não precisa fazer nada extra para eles.
+
+> Alterações no app `core` (que fica só no banco central, ex: mudar o
+> model `Tenant`) seguem o fluxo normal do Django: `makemigrations core`
+> e depois só `migrate` (sem precisar do `migrate_all_tenants`, que é
+> exclusivo para os apps de tenant).
 - [x] Autenticação multi-tenant (login por email + senha + CPF/CNPJ)
 - [x] Usuários e níveis de acesso (Role)
 - [x] Menu lateral dinâmico por nível de acesso
