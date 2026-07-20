@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import axiosClient from '../../api/axiosClient';
-import { useAuth } from '../../context/AuthContext';
 
 function CardMetrica({ titulo, valor, subtitulo, cor }) {
   return (
@@ -21,7 +20,6 @@ function CardMetrica({ titulo, valor, subtitulo, cor }) {
 
 export default function Dashboard() {
   const [resumo, setResumo] = useState(null);
-  const { user, tenant } = useAuth();
 
   useEffect(() => {
     axiosClient.get('/dashboard/resumo/').then((res) => setResumo(res.data));
@@ -34,17 +32,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Cabeçalho */}
-      <div className="mb-4">
-        <div className="text-uppercase text-primary small fw-bold" style={{ letterSpacing: '1px' }}>Visão Geral</div>
-        <h3 className="fw-bold mb-0">{tenant?.nome || 'ADMSTUDIO'}</h3>
-      </div>
-
-      <div className="mb-4">
-        <div className="text-uppercase text-muted small fw-bold" style={{ letterSpacing: '1px' }}>Bem-vindo de volta</div>
-        <div className="fs-5 fw-bold text-uppercase">{user?.nome}</div>
-      </div>
-
       {/* Cards */}
       <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
         <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#3498db" />
