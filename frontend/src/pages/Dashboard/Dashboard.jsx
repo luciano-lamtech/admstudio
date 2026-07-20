@@ -6,7 +6,7 @@ function CardMetrica({ titulo, valor, subtitulo, cor }) {
   return (
     <div className="col">
       <div className="card border-0 shadow-sm h-100" style={{ backgroundColor: cor, borderRadius: '10px' }}>
-        <div className="card-body text-white">
+        <div className="card-body text-dark text-center d-flex flex-column align-items-center justify-content-center">
           <div className="text-uppercase small fw-semibold mb-2 opacity-75" style={{ letterSpacing: '0.5px' }}>
             {titulo}
           </div>
@@ -34,9 +34,9 @@ export default function Dashboard() {
     <div>
       {/* Cards */}
       <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
-        <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#3498db" />
-        <CardMetrica titulo="Agendamentos Hoje" valor={resumo?.agendamentos_hoje ?? '—'} subtitulo="Em breve" cor="#f1c40f" />
-        <CardMetrica titulo="Faturamento do Mês" valor={`R$ ${resumo?.faturamento_mes ?? '0,00'}`} subtitulo="Em breve" cor="#2ecc71" />
+        <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#d6eaf8" />
+        <CardMetrica titulo="Agendamentos Hoje" valor={resumo?.agendamentos_hoje ?? '—'} subtitulo="Em breve" cor="#fdf3d0" />
+        <CardMetrica titulo="Faturamento do Mês" valor={`R$ ${resumo?.faturamento_mes ?? '0,00'}`} subtitulo="Em breve" cor="#d5f2df" />
       </div>
 
       {/* Gráficos */}
