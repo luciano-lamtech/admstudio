@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password
+import re
 
 from core.models import Tenant
 from accounts.models import User, MenuItem
@@ -28,7 +29,7 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get('email', '').strip().lower()
         senha = request.data.get('senha', '')
-        cnpj_cpf = request.data.get('id', '').strip()
+        cnpj_cpf = re.sub(r'\D', '', request.data.get('id', ''))
 
         if not (email and senha and cnpj_cpf):
             return Response({'detail': 'Informe email, senha e o CPF/CNPJ do assinante.'}, status=400)

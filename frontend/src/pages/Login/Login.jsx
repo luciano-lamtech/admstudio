@@ -66,10 +66,12 @@ export default function Login() {
               <label className="form-label small fw-semibold">CNPJ ou CPF (identificação do assinante)</label>
               <input
                 type="text"
+                inputMode="numeric"
                 className="form-control"
-                placeholder="00.000.000/0000-00"
+                placeholder="Somente números"
                 value={id}
-                onChange={(e) => setId(e.target.value)}
+                onChange={(e) => setId(e.target.value.replace(/\D/g, '').slice(0, 14))}
+                maxLength={14}
                 required
               />
             </div>

@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+import re
 
 from core.models import Tenant
 from authentication.utils import register_tenant_connection
@@ -48,7 +49,7 @@ class Command(BaseCommand):
         parser.add_argument('--admin_nome', default='Administrador')
 
     def handle(self, *args, **options):
-        cnpj_cpf = options['cnpj_cpf']
+        cnpj_cpf = re.sub(r'\D', '', options['cnpj_cpf'])
 
         tenant, created = Tenant.objects.get_or_create(
             cnpj_cpf=cnpj_cpf,

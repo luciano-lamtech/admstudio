@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 
 
@@ -36,10 +38,17 @@ class Tenant(models.Model):
         verbose_name = 'Assinante'
         verbose_name_plural = 'Assinantes'
 
+    def save(self, *args, **kwargs):
+        # Garante que o CNPJ/CPF seja sempre salvo só com números,
+        # independente de como foi digitado (com ou sem pontuação).
+        if self.cnpj_cpf:
+            self.cnpj_cpf = re.sub(r'\D', '', self.cnpj_cpf)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.nome_fantasia or self.razao_social} ({self.cnpj_cpf})"
 
     @property
     def alias(self):
         """Alias único usado para registrar a conexão dinâmica desse tenant."""
-        return f"tenant_{self.cnpj_cpf.replace('.', '').replace('/', '').replace('-', '')}"
+        return f"tenant_{self.cnpj_cpf}"
