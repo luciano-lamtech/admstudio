@@ -2,6 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+const hoje = new Date().toLocaleDateString('pt-BR', {
+  weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+});
+
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -13,7 +17,7 @@ export default function Header() {
 
   return (
     <header className="d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
-      <div />
+      <div className="text-muted small text-capitalize">{hoje}</div>
       <div className="dropdown">
         <button
           className="btn btn-light d-flex align-items-center gap-2 dropdown-toggle"

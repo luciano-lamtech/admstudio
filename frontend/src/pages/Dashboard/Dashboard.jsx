@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import axiosClient from '../../api/axiosClient';
 import { useAuth } from '../../context/AuthContext';
-
-const hoje = new Date().toLocaleDateString('pt-BR', {
-  weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
-});
 
 function CardMetrica({ titulo, valor, subtitulo, cor }) {
   return (
     <div className="col">
-      <div className="card border-0 shadow-sm h-100" style={{ borderTop: `4px solid ${cor}`, borderRadius: '10px' }}>
-        <div className="card-body">
-          <div className="text-uppercase text-muted small fw-semibold mb-2" style={{ letterSpacing: '0.5px' }}>
+      <div className="card border-0 shadow-sm h-100" style={{ backgroundColor: cor, borderRadius: '10px' }}>
+        <div className="card-body text-white">
+          <div className="text-uppercase small fw-semibold mb-2 opacity-75" style={{ letterSpacing: '0.5px' }}>
             {titulo}
           </div>
-          <div className="fs-2 fw-bold">{valor}</div>
-          <div className="text-muted small">{subtitulo}</div>
+          <div className="fs-1 fw-bold">{valor}</div>
+          <div className="small opacity-75">{subtitulo}</div>
         </div>
       </div>
     </div>
@@ -39,12 +35,9 @@ export default function Dashboard() {
   return (
     <div>
       {/* Cabeçalho */}
-      <div className="d-flex justify-content-between align-items-start mb-4">
-        <div>
-          <div className="text-uppercase text-primary small fw-bold" style={{ letterSpacing: '1px' }}>Visão Geral</div>
-          <h3 className="fw-bold mb-0">{tenant?.nome || 'ADMSTUDIO'}</h3>
-        </div>
-        <div className="text-muted small text-capitalize">{hoje}</div>
+      <div className="mb-4">
+        <div className="text-uppercase text-primary small fw-bold" style={{ letterSpacing: '1px' }}>Visão Geral</div>
+        <h3 className="fw-bold mb-0">{tenant?.nome || 'ADMSTUDIO'}</h3>
       </div>
 
       <div className="mb-4">
@@ -53,12 +46,10 @@ export default function Dashboard() {
       </div>
 
       {/* Cards */}
-      <div className="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-3 mb-4">
-        <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#2ecc71" />
-        <CardMetrica titulo="Total de Clientes" valor={resumo?.total_clientes ?? '—'} subtitulo="Cadastrados" cor="#3498db" />
-        <CardMetrica titulo="Clientes Inativos" valor={resumo?.clientes_inativos ?? '—'} subtitulo="Inativos" cor="#95a5a6" />
-        <CardMetrica titulo="Agendamentos Hoje" valor={resumo?.agendamentos_hoje ?? '—'} subtitulo="Em breve" cor="#9b59b6" />
-        <CardMetrica titulo="Faturamento do Mês" valor={`R$ ${resumo?.faturamento_mes ?? '0,00'}`} subtitulo="Em breve" cor="#e67e22" />
+      <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#3498db" />
+        <CardMetrica titulo="Agendamentos Hoje" valor={resumo?.agendamentos_hoje ?? '—'} subtitulo="Em breve" cor="#f1c40f" />
+        <CardMetrica titulo="Faturamento do Mês" valor={`R$ ${resumo?.faturamento_mes ?? '0,00'}`} subtitulo="Em breve" cor="#2ecc71" />
       </div>
 
       {/* Gráficos */}
