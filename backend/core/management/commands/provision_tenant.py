@@ -6,6 +6,7 @@ from core.models import Tenant
 from authentication.utils import register_tenant_connection
 from authentication.middleware import set_current_tenant_alias
 from accounts.models import Role, MenuItem, User
+from accounts.menu_defaults import DEFAULT_MENU_ITEMS
 
 
 class Command(BaseCommand):
@@ -97,14 +98,11 @@ class Command(BaseCommand):
         Role.objects.using(alias).get_or_create(nome='Profissional', defaults={'nivel': 1})
 
         # Menu lateral padrão
-        MenuItem.objects.using(alias).get_or_create(
-            rota='/dashboard',
-            defaults=dict(label='Dashboard', icone='bi-speedometer2', ordem=1, nivel_minimo=1),
-        )
-        MenuItem.objects.using(alias).get_or_create(
-            rota='/clientes',
-            defaults=dict(label='Clientes', icone='bi-people', ordem=2, nivel_minimo=1),
-        )
+        for item in DEFAULT_MENU_ITEMS:
+            MenuItem.objects.using(alias).get_or_create(
+                rota=item['rota'],
+                defaults={k: v for k, v in item.items() if k != 'rota'},
+            )
 
         # Usuário administrador
         email = options['admin_email'].lower()
