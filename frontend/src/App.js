@@ -4,6 +4,7 @@ import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientesList from './pages/Clientes/ClientesList';
 import ServicosProdutosList from './pages/ServicosProdutos/ServicosProdutosList';
+import AgendamentosList from './pages/Agendamentos/AgendamentosList';
 import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
@@ -23,6 +24,10 @@ export default function App() {
 
       <Route path="/servicos-produtos" element={
         <PrivateRoute><ServicosProdutosList /></PrivateRoute>
+      } />
+
+      <Route path="/agendamentos" element={
+        <PrivateRoute><AgendamentosList /></PrivateRoute>
       } />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

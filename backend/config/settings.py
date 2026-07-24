@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'dashboard',       # dados do dashboard (por tenant)
     'clientes',        # módulo de clientes/cadastros (por tenant)
     'catalogo',        # módulo de serviços e produtos (por tenant)
+    'agendamentos',    # módulo de agendamento / ordem de serviço (por tenant)
 ]
 
 MIDDLEWARE = [

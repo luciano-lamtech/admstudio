@@ -1,7 +1,7 @@
 from .middleware import get_current_tenant_alias
 
 # Apps cujos modelos moram no banco de CADA TENANT (não no central)
-TENANT_APPS = {'accounts', 'dashboard', 'clientes', 'catalogo'}
+TENANT_APPS = {'accounts', 'dashboard', 'clientes', 'catalogo', 'agendamentos'}
 
 # Apps que moram sempre no banco central
 CENTRAL_APPS = {'core', 'admin', 'auth', 'contenttypes', 'sessions'}
