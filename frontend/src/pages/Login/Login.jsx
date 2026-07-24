@@ -33,10 +33,16 @@ export default function Login() {
           <div className="text-center mb-4">
             <div className="d-flex align-items-center justify-content-center gap-2">
               <svg width="40" height="40" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="24,8 24,24 10.14,16" fill="#3b82f6" />
-                <polygon points="24,8 37.86,16 24,24" fill="#fbbf24" />
-                <polygon points="10.14,16 24,24 24,40 10.14,32" fill="#f4645c" />
-                <polygon points="24,24 37.86,16 37.86,32 24,40" fill="#f4645c" opacity="0.85" />
+                {/* Frasco */}
+                <rect x="17" y="22" width="14" height="18" rx="3" fill="#1e2a38" />
+                <rect x="16" y="26" width="10" height="10" rx="1" fill="#ffffff" opacity="0.15" />
+                {/* Bico / válvula */}
+                <rect x="19" y="14" width="10" height="8" rx="2" fill="#3b82f6" />
+                <rect x="21" y="9" width="6" height="5" rx="1" fill="#1e2a38" />
+                {/* Névoa do spray */}
+                <circle cx="14" cy="6" r="1.6" fill="#3b82f6" opacity="0.85" />
+                <circle cx="9" cy="9" r="1.3" fill="#3b82f6" opacity="0.6" />
+                <circle cx="6" cy="14" r="1" fill="#3b82f6" opacity="0.4" />
               </svg>
               <h2 className="fw-bold mb-0" style={{ color: '#1e2a38' }}>ADM<span className="text-primary">STUDIO</span></h2>
             </div>
