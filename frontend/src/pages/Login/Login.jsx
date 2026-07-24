@@ -31,8 +31,19 @@ export default function Login() {
       <div className="card shadow-lg border-0" style={{ width: '380px', borderRadius: '16px' }}>
         <div className="card-body p-4">
           <div className="text-center mb-4">
-            <h2 className="fw-bold" style={{ color: '#1e2a38' }}>ADM<span className="text-primary">STUDIO</span></h2>
-            <p className="text-muted small">Gestão para salões, barbearias e clínicas</p>
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <svg width="40" height="40" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" fillRule="evenodd">
+                  <path d="M24 4c3 5 3 9 0 12-3-3-3-7 0-12z" fill="#0d6efd" />
+                  <path d="M24 4c3 5 3 9 0 12-3-3-3-7 0-12z" fill="#0d6efd" transform="rotate(72 24 24)" />
+                  <path d="M24 4c3 5 3 9 0 12-3-3-3-7 0-12z" fill="#3b82f6" transform="rotate(144 24 24)" />
+                  <path d="M24 4c3 5 3 9 0 12-3-3-3-7 0-12z" fill="#0d6efd" transform="rotate(216 24 24)" />
+                  <path d="M24 4c3 5 3 9 0 12-3-3-3-7 0-12z" fill="#3b82f6" transform="rotate(288 24 24)" />
+                  <circle cx="24" cy="24" r="4" fill="#1e2a38" />
+                </g>
+              </svg>
+              <h2 className="fw-bold mb-0" style={{ color: '#1e2a38' }}>ADM<span className="text-primary">STUDIO</span></h2>
+            </div>
           </div>
 
           {erro && <div className="alert alert-danger py-2 small">{erro}</div>}
