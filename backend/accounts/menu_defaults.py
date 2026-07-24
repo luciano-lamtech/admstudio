@@ -10,4 +10,5 @@ DEFAULT_MENU_ITEMS = [
     {'rota': '/clientes', 'label': 'Clientes', 'icone': 'bi-people', 'ordem': 2, 'nivel_minimo': 1},
     {'rota': '/agendamentos', 'label': 'Agendamentos', 'icone': 'bi-calendar-check', 'ordem': 3, 'nivel_minimo': 1},
     {'rota': '/servicos-produtos', 'label': 'Serviços e Produtos', 'icone': 'bi-bag-check', 'ordem': 4, 'nivel_minimo': 1},
+    {'rota': '/financeiro', 'label': 'Financeiro', 'icone': 'bi-cash-coin', 'ordem': 5, 'nivel_minimo': 3},
 ]

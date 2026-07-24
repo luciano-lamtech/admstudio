@@ -35,9 +35,12 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         agendamento = Agendamento.objects.create(**validated_data)
         self._salvar_itens(agendamento, itens_data)
         agendamento.recalcular_total()
+        if agendamento.status == 'concluido':
+            self._gerar_receita(agendamento)
         return agendamento
 
     def update(self, instance, validated_data):
+        status_anterior = instance.status
         itens_data = validated_data.pop('itens', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -46,7 +49,24 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             instance.itens.all().delete()
             self._salvar_itens(instance, itens_data)
         instance.recalcular_total()
+        if instance.status == 'concluido' and status_anterior != 'concluido':
+            self._gerar_receita(instance)
         return instance
+
+    def _gerar_receita(self, agendamento):
+        # Import local para evitar dependência circular entre os apps
+        from financeiro.models import Lancamento
+        if Lancamento.objects.filter(agendamento=agendamento).exists():
+            return  # já existe uma receita gerada para esse agendamento
+        Lancamento.objects.create(
+            tipo='receita',
+            categoria='Atendimento',
+            descricao=f'Atendimento - {agendamento.cliente.nome}',
+            valor=agendamento.valor_total,
+            status='pago',
+            data=agendamento.data_hora.date(),
+            agendamento=agendamento,
+        )
 
     def _salvar_itens(self, agendamento, itens_data):
         for item_data in itens_data:

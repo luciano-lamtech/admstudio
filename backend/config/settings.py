@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'clientes',        # módulo de clientes/cadastros (por tenant)
     'catalogo',        # módulo de serviços e produtos (por tenant)
     'agendamentos',    # módulo de agendamento / ordem de serviço (por tenant)
+    'financeiro',      # módulo financeiro (por tenant)
 ]
 
 MIDDLEWARE = [

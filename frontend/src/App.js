@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import ClientesList from './pages/Clientes/ClientesList';
 import ServicosProdutosList from './pages/ServicosProdutos/ServicosProdutosList';
 import AgendamentosList from './pages/Agendamentos/AgendamentosList';
+import FinanceiroList from './pages/Financeiro/FinanceiroList';
 import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
@@ -28,6 +29,10 @@ export default function App() {
 
       <Route path="/agendamentos" element={
         <PrivateRoute><AgendamentosList /></PrivateRoute>
+      } />
+
+      <Route path="/financeiro" element={
+        <PrivateRoute><FinanceiroList /></PrivateRoute>
       } />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
