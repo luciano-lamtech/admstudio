@@ -32,12 +32,12 @@ export default function Login() {
         <div className="card-body p-4">
           <div className="text-center mb-4">
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <div
-                className="d-flex align-items-center justify-content-center"
-                style={{ width: 42, height: 42, borderRadius: '50%', background: '#eaf1fb' }}
-              >
-                <i className="bi bi-gem" style={{ fontSize: '22px', color: '#1e2a38' }}></i>
-              </div>
+              <svg width="40" height="40" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="24,8 24,24 10.14,16" fill="#3b82f6" />
+                <polygon points="24,8 37.86,16 24,24" fill="#fbbf24" />
+                <polygon points="10.14,16 24,24 24,40 10.14,32" fill="#f4645c" />
+                <polygon points="24,24 37.86,16 37.86,32 24,40" fill="#f4645c" opacity="0.85" />
+              </svg>
               <h2 className="fw-bold mb-0" style={{ color: '#1e2a38' }}>ADM<span className="text-primary">STUDIO</span></h2>
             </div>
           </div>
