@@ -11,7 +11,6 @@ DEFAULT_MENU_ITEMS = [
     {'rota': '/agendamentos', 'label': 'Agendamentos', 'icone': 'bi-calendar-check', 'ordem': 3, 'nivel_minimo': 1},
     {'rota': '/servicos-produtos', 'label': 'Serviços e Produtos', 'icone': 'bi-bag-check', 'ordem': 4, 'nivel_minimo': 1},
     {'rota': '/caixa', 'label': 'Caixa', 'icone': 'bi-cash-stack', 'ordem': 5, 'nivel_minimo': 2},
-    {'rota': '/financeiro', 'label': 'Financeiro', 'icone': 'bi-cash-coin', 'ordem': 6, 'nivel_minimo': 3},
-    {'rota': '/gestao', 'label': 'Gestão', 'icone': 'bi-briefcase-fill', 'ordem': 7, 'nivel_minimo': 7},
-    {'rota': '/configuracoes', 'label': 'Configurações', 'icone': 'bi-gear-fill', 'ordem': 8, 'nivel_minimo': 10},
+    {'rota': '/gestao', 'label': 'Gestão', 'icone': 'bi-briefcase-fill', 'ordem': 6, 'nivel_minimo': 7},
+    {'rota': '/configuracoes', 'label': 'Configurações', 'icone': 'bi-gear-fill', 'ordem': 7, 'nivel_minimo': 10},
 ]

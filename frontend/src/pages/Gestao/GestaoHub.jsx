@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 const CARDS = [
   {
+    titulo: 'Financeiro',
+    descricao: 'Receitas, despesas e saldo do período',
+    icone: 'bi-cash-coin',
+    cor: '#16a34a',
+    rota: '/financeiro',
+  },
+  {
     titulo: 'Usuários e Perfis de Acesso',
     descricao: 'Gerencie quem acessa o sistema e o que cada um pode fazer',
     icone: 'bi-people-fill',
