@@ -63,7 +63,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             categoria='Atendimento',
             descricao=f'Atendimento - {agendamento.cliente.nome}',
             valor=agendamento.valor_total,
-            status='pago',
+            status='pendente',  # aguarda ser recebido no Caixa
             data=agendamento.data_hora.date(),
             agendamento=agendamento,
         )

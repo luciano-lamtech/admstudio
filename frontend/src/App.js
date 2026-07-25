@@ -6,6 +6,7 @@ import ClientesList from './pages/Clientes/ClientesList';
 import ServicosProdutosList from './pages/ServicosProdutos/ServicosProdutosList';
 import AgendamentosList from './pages/Agendamentos/AgendamentosList';
 import FinanceiroList from './pages/Financeiro/FinanceiroList';
+import CaixaList from './pages/Caixa/CaixaList';
 import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
@@ -33,6 +34,10 @@ export default function App() {
 
       <Route path="/financeiro" element={
         <PrivateRoute><FinanceiroList /></PrivateRoute>
+      } />
+
+      <Route path="/caixa" element={
+        <PrivateRoute><CaixaList /></PrivateRoute>
       } />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

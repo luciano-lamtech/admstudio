@@ -1,4 +1,6 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from .models import Lancamento
 from .serializers import LancamentoSerializer
 
@@ -26,3 +28,17 @@ class LancamentoViewSet(viewsets.ModelViewSet):
         if data_fim:
             qs = qs.filter(data__lte=data_fim)
         return qs
+
+    @action(detail=True, methods=['post'])
+    def receber(self, request, pk=None):
+        """
+        POST /api/financeiro/{id}/receber/
+        body: { "forma_pagamento": "pix" }
+        Dá baixa num lançamento pendente do Caixa, marcando como Pago.
+        """
+        lancamento = self.get_object()
+        forma_pagamento = request.data.get('forma_pagamento', lancamento.forma_pagamento)
+        lancamento.status = 'pago'
+        lancamento.forma_pagamento = forma_pagamento
+        lancamento.save()
+        return Response(LancamentoSerializer(lancamento).data, status=status.HTTP_200_OK)
