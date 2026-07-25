@@ -7,6 +7,9 @@ import ServicosProdutosList from './pages/ServicosProdutos/ServicosProdutosList'
 import AgendamentosList from './pages/Agendamentos/AgendamentosList';
 import FinanceiroList from './pages/Financeiro/FinanceiroList';
 import CaixaList from './pages/Caixa/CaixaList';
+import GestaoHub from './pages/Gestao/GestaoHub';
+import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
+import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
@@ -38,6 +41,29 @@ export default function App() {
 
       <Route path="/caixa" element={
         <PrivateRoute><CaixaList /></PrivateRoute>
+      } />
+
+      <Route path="/gestao" element={
+        <PrivateRoute><GestaoHub /></PrivateRoute>
+      } />
+      <Route path="/gestao/usuarios" element={
+        <PrivateRoute><PlaceholderPage titulo="Usuários e Perfis de Acesso" icone="bi-people-fill" /></PrivateRoute>
+      } />
+      <Route path="/gestao/profissionais" element={
+        <PrivateRoute><PlaceholderPage titulo="Profissionais" icone="bi-person-badge" /></PrivateRoute>
+      } />
+      <Route path="/gestao/relatorios" element={
+        <PrivateRoute><PlaceholderPage titulo="Relatórios" icone="bi-bar-chart-fill" /></PrivateRoute>
+      } />
+
+      <Route path="/configuracoes" element={
+        <PrivateRoute><ConfiguracoesHub /></PrivateRoute>
+      } />
+      <Route path="/configuracoes/negocio" element={
+        <PrivateRoute><PlaceholderPage titulo="Dados do Negócio" icone="bi-building" /></PrivateRoute>
+      } />
+      <Route path="/configuracoes/preferencias" element={
+        <PrivateRoute><PlaceholderPage titulo="Preferências do Sistema" icone="bi-sliders" /></PrivateRoute>
       } />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
