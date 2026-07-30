@@ -24,6 +24,13 @@ const CARDS = [
     rota: '/gestao/profissionais',
   },
   {
+    titulo: 'Cadastro de Especialidades',
+    descricao: 'Especialidades disponíveis para os profissionais',
+    icone: 'bi-tags-fill',
+    cor: '#ec4899',
+    rota: '/gestao/especialidades',
+  },
+  {
     titulo: 'Relatórios',
     descricao: 'Indicadores e relatórios detalhados do negócio',
     icone: 'bi-bar-chart-fill',

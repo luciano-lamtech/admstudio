@@ -9,6 +9,7 @@ import FinanceiroList from './pages/Financeiro/FinanceiroList';
 import CaixaList from './pages/Caixa/CaixaList';
 import GestaoHub from './pages/Gestao/GestaoHub';
 import ProfissionaisList from './pages/Profissionais/ProfissionaisList';
+import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
@@ -52,6 +53,9 @@ export default function App() {
       } />
       <Route path="/gestao/profissionais" element={
         <PrivateRoute><ProfissionaisList /></PrivateRoute>
+      } />
+      <Route path="/gestao/especialidades" element={
+        <PrivateRoute><EspecialidadesList /></PrivateRoute>
       } />
       <Route path="/gestao/relatorios" element={
         <PrivateRoute><PlaceholderPage titulo="Relatórios" icone="bi-bar-chart-fill" /></PrivateRoute>

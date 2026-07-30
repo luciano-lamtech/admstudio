@@ -9,12 +9,14 @@ const PROFISSIONAL_VAZIO = {
 export default function ProfissionaisList() {
   const [profissionais, setProfissionais] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [especialidades, setEspecialidades] = useState([]);
   const [busca, setBusca] = useState('');
 
   const [mostrarForm, setMostrarForm] = useState(false);
   const [form, setForm] = useState(PROFISSIONAL_VAZIO);
   const [editandoId, setEditandoId] = useState(null);
   const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState('');
 
   async function carregar() {
     const res = await axiosClient.get('/profissionais/', { params: { search: busca || undefined } });
@@ -26,8 +28,13 @@ export default function ProfissionaisList() {
     setUsuarios(res.data.results || res.data);
   }
 
+  async function carregarEspecialidades() {
+    const res = await axiosClient.get('/profissionais/especialidades/', { params: { ativo: 'true' } });
+    setEspecialidades(res.data.results || res.data);
+  }
+
   useEffect(() => { carregar(); }, [busca]); // eslint-disable-line
-  useEffect(() => { carregarUsuarios(); }, []);
+  useEffect(() => { carregarUsuarios(); carregarEspecialidades(); }, []);
 
   function abrirNovo() {
     setForm(PROFISSIONAL_VAZIO);
@@ -42,17 +49,20 @@ export default function ProfissionaisList() {
       usuario: p.usuario || '', ativo: p.ativo,
     });
     setEditandoId(p.id);
+    setErro('');
     setMostrarForm(true);
   }
 
   async function salvar(e) {
     e.preventDefault();
+    setErro('');
     setSalvando(true);
     try {
       const payload = {
         ...form,
         comissao_percentual: parseFloat(form.comissao_percentual) || 0,
         usuario: form.usuario || null,
+        especialidade: form.especialidade || null,
       };
       if (editandoId) {
         await axiosClient.put(`/profissionais/${editandoId}/`, payload);
@@ -61,6 +71,12 @@ export default function ProfissionaisList() {
       }
       setMostrarForm(false);
       carregar();
+    } catch (err) {
+      const dadosErro = err.response?.data;
+      const mensagem = dadosErro
+        ? Object.entries(dadosErro).map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join(' | ')
+        : 'Não foi possível salvar. Tente novamente.';
+      setErro(mensagem);
     } finally {
       setSalvando(false);
     }
@@ -114,7 +130,7 @@ export default function ProfissionaisList() {
                     <span className="d-inline-block rounded-circle me-2" style={{ width: 10, height: 10, backgroundColor: p.cor }}></span>
                     {p.nome}
                   </td>
-                  <td>{p.especialidade || '—'}</td>
+                  <td>{p.especialidade_nome || '—'}</td>
                   <td>{p.telefone || '—'}</td>
                   <td>{parseFloat(p.comissao_percentual).toFixed(1)}%</td>
                   <td>
@@ -150,6 +166,7 @@ export default function ProfissionaisList() {
               </div>
               <form onSubmit={salvar}>
                 <div className="modal-body">
+                  {erro && <div className="alert alert-danger py-2 small">{erro}</div>}
                   <div className="mb-2">
                     <label className="form-label small">Nome</label>
                     <input className="form-control" required value={form.nome}
@@ -157,8 +174,14 @@ export default function ProfissionaisList() {
                   </div>
                   <div className="mb-2">
                     <label className="form-label small">Especialidade</label>
-                    <input className="form-control" placeholder="Ex: Cabeleireiro, Manicure, Esteticista..." value={form.especialidade}
-                      onChange={(e) => setForm({ ...form, especialidade: e.target.value })} />
+                    <select className="form-select" value={form.especialidade}
+                      onChange={(e) => setForm({ ...form, especialidade: e.target.value })}>
+                      <option value="">Selecione...</option>
+                      {especialidades.map((esp) => <option key={esp.id} value={esp.id}>{esp.nome}</option>)}
+                    </select>
+                    <div className="form-text">
+                      Não encontrou? Cadastre em Gestão → Cadastro de Especialidades.
+                    </div>
                   </div>
                   <div className="row g-2 mb-2">
                     <div className="col-6">

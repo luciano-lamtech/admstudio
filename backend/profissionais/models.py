@@ -2,6 +2,20 @@ from django.db import models
 from accounts.models import User
 
 
+class Especialidade(models.Model):
+    """Cadastro de especialidades (Cabeleireiro, Manicure, Esteticista...)."""
+    nome = models.CharField(max_length=100, unique=True)
+    ativo = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'especialidades'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
+
 class Profissional(models.Model):
     """
     Cadastro de profissionais que atendem (cabeleireiro, barbeiro,
@@ -9,7 +23,9 @@ class Profissional(models.Model):
     sistema (accounts.User) para profissionais que também fazem login.
     """
     nome = models.CharField(max_length=150)
-    especialidade = models.CharField(max_length=100, blank=True)
+    especialidade = models.ForeignKey(
+        Especialidade, on_delete=models.SET_NULL, null=True, blank=True, related_name='profissionais',
+    )
     telefone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
     comissao_percentual = models.DecimalField(max_digits=5, decimal_places=2, default=0)
