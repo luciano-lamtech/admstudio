@@ -25,6 +25,15 @@ axiosClient.interceptors.request.use((config) => {
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response) {
+      console.error(
+        `[ADMSTUDIO] Erro ${error.response.status} em ${error.config?.method?.toUpperCase()} ${error.config?.url}:`,
+        error.response.data,
+      );
+    } else {
+      console.error(`[ADMSTUDIO] Falha de rede/CORS ao chamar ${error.config?.url}:`, error.message);
+    }
+
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('admstudio_access');
       localStorage.removeItem('admstudio_refresh');

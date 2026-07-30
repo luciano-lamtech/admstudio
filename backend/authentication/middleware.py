@@ -13,9 +13,12 @@ def get_current_tenant_alias():
 
 class TenantMiddleware:
     """
-    A cada requisição, lê o claim 'tenant_alias' do token JWT (já
-    validado pelo DRF/SimpleJWT) e disponibiliza o alias do banco do
-    tenant para o TenantDatabaseRouter usar nas queries dessa requisição.
+    A cada requisição, lê os claims do token JWT (já validado pelo
+    DRF/SimpleJWT) e garante que a conexão com o banco do tenant esteja
+    registrada NESTE processo (o Gunicorn roda vários workers/processos,
+    cada um com sua própria memória — a conexão registrada no login pode
+    não existir ainda no processo que atende uma requisição posterior).
+    Se não existir, registra agora sob demanda usando o CNPJ do token.
     """
 
     def __init__(self, get_response):
@@ -29,8 +32,21 @@ class TenantMiddleware:
             token_str = auth_header.split(' ', 1)[1]
             try:
                 from rest_framework_simplejwt.tokens import AccessToken
+                from django.db import connections
+
                 token = AccessToken(token_str)
                 alias = token.get('tenant_alias')
+                tenant_cnpj = token.get('tenant_cnpj')
+
+                if alias and alias not in connections.databases and tenant_cnpj:
+                    from core.models import Tenant
+                    from .utils import register_tenant_connection
+                    try:
+                        tenant = Tenant.objects.get(cnpj_cpf=tenant_cnpj, is_active=True)
+                        register_tenant_connection(tenant)
+                    except Tenant.DoesNotExist:
+                        alias = None
+
                 if alias:
                     set_current_tenant_alias(alias)
             except Exception:
