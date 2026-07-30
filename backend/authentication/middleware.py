@@ -39,3 +39,22 @@ class TenantMiddleware:
         response = self.get_response(request)
         set_current_tenant_alias(None)
         return response
+
+
+class NoCacheAPIMiddleware:
+    """
+    Garante que nenhuma resposta da API (/api/...) seja armazenada em
+    cache pelo navegador ou por qualquer proxy no caminho (ex: o proxy
+    reverso do EasyPanel). Sem isso, telas de listagem podiam mostrar
+    dados desatualizados até a página ser recarregada manualmente.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if request.path.startswith('/api/'):
+            response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+            response['Pragma'] = 'no-cache'
+        return response

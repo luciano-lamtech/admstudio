@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Middleware customizado: identifica o tenant da requisição a partir do JWT
     'authentication.middleware.TenantMiddleware',
+    # Garante que respostas da API nunca fiquem em cache
+    'authentication.middleware.NoCacheAPIMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
