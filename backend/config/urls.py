@@ -7,6 +7,7 @@ urlpatterns = [
     path('api/auth/', include('authentication.urls')),
     path('api/dashboard/', include('dashboard.urls')),
     path('api/clientes/', include('clientes.urls')),
+    path('api/profissionais/', include('profissionais.urls')),
     path('api/catalogo/', include('catalogo.urls')),
     path('api/agendamentos/', include('agendamentos.urls')),
     path('api/financeiro/', include('financeiro.urls')),

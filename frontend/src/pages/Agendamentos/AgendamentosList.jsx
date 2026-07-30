@@ -41,7 +41,7 @@ export default function AgendamentosList() {
   async function carregarListasApoio() {
     const [resClientes, resProfissionais, resCatalogo] = await Promise.all([
       axiosClient.get('/clientes/'),
-      axiosClient.get('/usuarios/'),
+      axiosClient.get('/profissionais/', { params: { ativo: 'true' } }),
       axiosClient.get('/catalogo/'),
     ]);
     setClientes(resClientes.data.results || resClientes.data);

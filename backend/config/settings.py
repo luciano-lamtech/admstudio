@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'accounts',        # usuários e perfis de acesso (por tenant)
     'dashboard',       # dados do dashboard (por tenant)
     'clientes',        # módulo de clientes/cadastros (por tenant)
+    'profissionais',   # cadastro de profissionais (por tenant)
     'catalogo',        # módulo de serviços e produtos (por tenant)
     'agendamentos',    # módulo de agendamento / ordem de serviço (por tenant)
     'financeiro',      # módulo financeiro (por tenant)

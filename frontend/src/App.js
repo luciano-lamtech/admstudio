@@ -8,6 +8,7 @@ import AgendamentosList from './pages/Agendamentos/AgendamentosList';
 import FinanceiroList from './pages/Financeiro/FinanceiroList';
 import CaixaList from './pages/Caixa/CaixaList';
 import GestaoHub from './pages/Gestao/GestaoHub';
+import ProfissionaisList from './pages/Profissionais/ProfissionaisList';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
@@ -50,7 +51,7 @@ export default function App() {
         <PrivateRoute><PlaceholderPage titulo="Usuários e Perfis de Acesso" icone="bi-people-fill" /></PrivateRoute>
       } />
       <Route path="/gestao/profissionais" element={
-        <PrivateRoute><PlaceholderPage titulo="Profissionais" icone="bi-person-badge" /></PrivateRoute>
+        <PrivateRoute><ProfissionaisList /></PrivateRoute>
       } />
       <Route path="/gestao/relatorios" element={
         <PrivateRoute><PlaceholderPage titulo="Relatórios" icone="bi-bar-chart-fill" /></PrivateRoute>

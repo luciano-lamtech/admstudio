@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db import models
 
 from clientes.models import Cliente
-from accounts.models import User
+from profissionais.models import Profissional
 from catalogo.models import ItemCatalogo
 
 
@@ -18,7 +18,7 @@ class Agendamento(models.Model):
 
     cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='agendamentos')
     profissional = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name='agendamentos', null=True, blank=True,
+        Profissional, on_delete=models.SET_NULL, related_name='agendamentos', null=True, blank=True,
     )
     data_hora = models.DateTimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='agendado')
