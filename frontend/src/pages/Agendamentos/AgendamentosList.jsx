@@ -252,7 +252,7 @@ export default function AgendamentosList() {
                     </div>
                   </div>
 
-                  <label className="form-label small fw-semibold">Serviços / Produtos</label>
+                  <label className="form-label small fw-semibold d-block">Serviços / Produtos</label>
                   {form.itens.map((item, index) => (
                     <div className="row g-2 mb-2 align-items-center" key={index}>
                       <div className="col-5">
