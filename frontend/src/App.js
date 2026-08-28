@@ -10,6 +10,8 @@ import CaixaList from './pages/Caixa/CaixaList';
 import GestaoHub from './pages/Gestao/GestaoHub';
 import ProfissionaisList from './pages/Profissionais/ProfissionaisList';
 import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
+import RelatoriosHub from './pages/Relatorios/RelatoriosHub';
+import RelatorioComissao from './pages/Relatorios/RelatorioComissao';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
@@ -58,7 +60,10 @@ export default function App() {
         <PrivateRoute><EspecialidadesList /></PrivateRoute>
       } />
       <Route path="/gestao/relatorios" element={
-        <PrivateRoute><PlaceholderPage titulo="Relatórios" icone="bi-bar-chart-fill" /></PrivateRoute>
+        <PrivateRoute><RelatoriosHub /></PrivateRoute>
+      } />
+      <Route path="/gestao/relatorios/comissao" element={
+        <PrivateRoute><RelatorioComissao /></PrivateRoute>
       } />
 
       <Route path="/configuracoes" element={
