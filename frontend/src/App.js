@@ -13,6 +13,7 @@ import EspecialidadesList from './pages/Especialidades/EspecialidadesList';
 import RelatoriosHub from './pages/Relatorios/RelatoriosHub';
 import RelatorioComissao from './pages/Relatorios/RelatorioComissao';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
+import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -70,7 +71,7 @@ export default function App() {
         <PrivateRoute><ConfiguracoesHub /></PrivateRoute>
       } />
       <Route path="/configuracoes/negocio" element={
-        <PrivateRoute><PlaceholderPage titulo="Dados do Negócio" icone="bi-building" /></PrivateRoute>
+        <PrivateRoute><DadosNegocioList /></PrivateRoute>
       } />
       <Route path="/configuracoes/preferencias" element={
         <PrivateRoute><PlaceholderPage titulo="Preferências do Sistema" icone="bi-sliders" /></PrivateRoute>
