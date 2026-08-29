@@ -39,12 +39,15 @@ class RelatorioComissaoView(APIView):
     def get(self, request):
         data_inicio = request.query_params.get('data_inicio')
         data_fim = request.query_params.get('data_fim')
+        profissional_id = request.query_params.get('profissional')
 
         qs = Agendamento.objects.filter(status='concluido').exclude(profissional__isnull=True)
         if data_inicio:
             qs = qs.filter(data_hora__date__gte=data_inicio)
         if data_fim:
             qs = qs.filter(data_hora__date__lte=data_fim)
+        if profissional_id:
+            qs = qs.filter(profissional_id=profissional_id)
 
         agregado = (
             qs.values('profissional_id', 'profissional__nome', 'profissional__comissao_percentual')

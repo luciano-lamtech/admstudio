@@ -14,6 +14,8 @@ export default function RelatorioComissao() {
   const navigate = useNavigate();
   const [dataInicio, setDataInicio] = useState(primeiroDiaMes());
   const [dataFim, setDataFim] = useState(hojeISO());
+  const [profissionalFiltro, setProfissionalFiltro] = useState('');
+  const [profissionais, setProfissionais] = useState([]);
   const [relatorio, setRelatorio] = useState(null);
   const [carregando, setCarregando] = useState(false);
 
@@ -21,7 +23,11 @@ export default function RelatorioComissao() {
     setCarregando(true);
     try {
       const res = await axiosClient.get('/agendamentos/relatorio-comissao/', {
-        params: { data_inicio: dataInicio, data_fim: dataFim },
+        params: {
+          data_inicio: dataInicio,
+          data_fim: dataFim,
+          profissional: profissionalFiltro || undefined,
+        },
       });
       setRelatorio(res.data);
     } finally {
@@ -29,7 +35,13 @@ export default function RelatorioComissao() {
     }
   }
 
-  useEffect(() => { carregar(); }, [dataInicio, dataFim]); // eslint-disable-line
+  async function carregarProfissionais() {
+    const res = await axiosClient.get('/profissionais/');
+    setProfissionais(res.data.results || res.data);
+  }
+
+  useEffect(() => { carregar(); }, [dataInicio, dataFim, profissionalFiltro]); // eslint-disable-line
+  useEffect(() => { carregarProfissionais(); }, []);
 
   return (
     <div>
@@ -49,6 +61,14 @@ export default function RelatorioComissao() {
           <label className="form-label small d-block">Até</label>
           <input type="date" className="form-control" value={dataFim}
             onChange={(e) => setDataFim(e.target.value)} />
+        </div>
+        <div>
+          <label className="form-label small d-block">Profissional</label>
+          <select className="form-select" value={profissionalFiltro}
+            onChange={(e) => setProfissionalFiltro(e.target.value)}>
+            <option value="">Todos</option>
+            {profissionais.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
+          </select>
         </div>
       </div>
 
