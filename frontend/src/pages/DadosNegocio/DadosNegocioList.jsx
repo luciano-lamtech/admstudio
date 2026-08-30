@@ -3,8 +3,14 @@ import axiosClient from '../../api/axiosClient';
 
 const UNIDADE_VAZIA = {
   nome_empresa: '', cnpj_cpf: '', nome_contato: '', telefone_contato: '',
-  email: '', telegram_id: '', endereco: '', numero: '', bairro: '',
-  cidade: '', estado: '', cep: '', pais: 'Brasil', ativo: true,
+  email: '', telegram_id: '', cep: '', pais: 'Brasil', endereco: '', numero: '',
+  bairro: '', cidade: '', estado: '', status: 'em_analise',
+};
+
+const STATUS_INFO = {
+  em_analise: { label: 'Em Análise', cor: 'text-bg-warning' },
+  ativo: { label: 'Ativo', cor: 'text-bg-success' },
+  inativo: { label: 'Inativo', cor: 'text-bg-secondary' },
 };
 
 export default function DadosNegocioList() {
@@ -14,6 +20,7 @@ export default function DadosNegocioList() {
   const [editandoId, setEditandoId] = useState(null);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState('');
+  const [buscandoCep, setBuscandoCep] = useState(false);
 
   async function carregar() {
     const res = await axiosClient.get('/negocio/');
@@ -21,6 +28,36 @@ export default function DadosNegocioList() {
   }
 
   useEffect(() => { carregar(); }, []);
+
+  async function buscarEnderecoPorCep(cepDigitado) {
+    const cepLimpo = cepDigitado.replace(/\D/g, '');
+    if (cepLimpo.length !== 8) return;
+    setBuscandoCep(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const dados = await res.json();
+      if (!dados.erro) {
+        setForm((f) => ({
+          ...f,
+          endereco: dados.logradouro || f.endereco,
+          bairro: dados.bairro || f.bairro,
+          cidade: dados.localidade || f.cidade,
+          estado: dados.uf || f.estado,
+        }));
+      }
+    } catch {
+      // Falha na busca não impede o preenchimento manual — segue normal.
+    } finally {
+      setBuscandoCep(false);
+    }
+  }
+
+  function handleCepChange(valorDigitado) {
+    const digitos = valorDigitado.replace(/\D/g, '').slice(0, 8);
+    const formatado = digitos.length > 5 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos;
+    setForm({ ...form, cep: formatado });
+    if (digitos.length === 8) buscarEnderecoPorCep(digitos);
+  }
 
   function abrirNovo() {
     setForm(UNIDADE_VAZIA);
@@ -50,9 +87,14 @@ export default function DadosNegocioList() {
       carregar();
     } catch (err) {
       const dadosErro = err.response?.data;
-      const mensagem = dadosErro
-        ? Object.entries(dadosErro).map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join(' | ')
-        : 'Não foi possível salvar. Tente novamente.';
+      let mensagem = 'Não foi possível salvar. Tente novamente.';
+      if (dadosErro && typeof dadosErro === 'object' && !Array.isArray(dadosErro)) {
+        mensagem = Object.entries(dadosErro)
+          .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+          .join(' | ');
+      } else if (err.response?.status) {
+        mensagem = `Erro ${err.response.status} no servidor. Tente novamente ou avise o suporte.`;
+      }
       setErro(mensagem);
     } finally {
       setSalvando(false);
@@ -104,8 +146,8 @@ export default function DadosNegocioList() {
                   </td>
                   <td>{u.cidade ? `${u.cidade}/${u.estado}` : '—'}</td>
                   <td>
-                    <span className={`badge rounded-pill ${u.ativo ? 'text-bg-success' : 'text-bg-secondary'}`}>
-                      {u.ativo ? 'Ativo' : 'Inativo'}
+                    <span className={`badge rounded-pill ${STATUS_INFO[u.status]?.cor || 'text-bg-secondary'}`}>
+                      {u.status_display || STATUS_INFO[u.status]?.label || u.status}
                     </span>
                   </td>
                   <td className="text-end pe-3">
@@ -181,6 +223,30 @@ export default function DadosNegocioList() {
                   <hr className="my-3" />
                   <div className="small fw-semibold text-muted mb-2">ENDEREÇO</div>
                   <div className="row g-2 mb-2">
+                    <div className="col-md-4">
+                      <label className="form-label small fw-semibold text-warning-emphasis">
+                        CEP {buscandoCep && <span className="spinner-border spinner-border-sm ms-1"></span>}
+                      </label>
+                      <div className="input-group">
+                        <span className="input-group-text bg-warning-subtle border-warning text-warning-emphasis">
+                          <i className="bi bi-search"></i>
+                        </span>
+                        <input
+                          className="form-control border-warning bg-warning-subtle"
+                          placeholder="00000-000"
+                          value={form.cep}
+                          onChange={(e) => handleCepChange(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-text">Digite o CEP para preencher o endereço automaticamente.</div>
+                    </div>
+                    <div className="col-md-8">
+                      <label className="form-label small">País</label>
+                      <input className="form-control" value={form.pais}
+                        onChange={(e) => setForm({ ...form, pais: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="row g-2 mb-2">
                     <div className="col-md-9">
                       <label className="form-label small">Endereço</label>
                       <input className="form-control" value={form.endereco}
@@ -209,24 +275,28 @@ export default function DadosNegocioList() {
                         onChange={(e) => setForm({ ...form, estado: e.target.value.toUpperCase() })} />
                     </div>
                   </div>
-                  <div className="row g-2 mb-2">
-                    <div className="col-md-4">
-                      <label className="form-label small">CEP</label>
-                      <input className="form-control" value={form.cep}
-                        onChange={(e) => setForm({ ...form, cep: e.target.value })} />
-                    </div>
-                    <div className="col-md-8">
-                      <label className="form-label small">País</label>
-                      <input className="form-control" value={form.pais}
-                        onChange={(e) => setForm({ ...form, pais: e.target.value })} />
-                    </div>
-                  </div>
 
-                  <div className="form-check mt-2">
-                    <input className="form-check-input" type="checkbox" id="ativoUnidade"
-                      checked={form.ativo}
-                      onChange={(e) => setForm({ ...form, ativo: e.target.checked })} />
-                    <label className="form-check-label small" htmlFor="ativoUnidade">Ativo</label>
+                  <hr className="my-3" />
+                  <div className="mb-2">
+                    <label className="form-label small">Status</label>
+                    <div>
+                      <span className={`badge rounded-pill ${STATUS_INFO[form.status]?.cor || 'text-bg-secondary'}`}>
+                        {STATUS_INFO[form.status]?.label || form.status}
+                      </span>
+                      {!editandoId && (
+                        <span className="text-muted small ms-2">
+                          Novas unidades iniciam em análise até a mensalidade ser ajustada.
+                        </span>
+                      )}
+                    </div>
+                    {editandoId && (
+                      <select className="form-select mt-2" value={form.status}
+                        onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                        {Object.entries(STATUS_INFO).map(([valor, { label }]) => (
+                          <option key={valor} value={valor}>{label}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </div>
                 <div className="modal-footer">

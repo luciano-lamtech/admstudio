@@ -73,9 +73,14 @@ export default function ProfissionaisList() {
       carregar();
     } catch (err) {
       const dadosErro = err.response?.data;
-      const mensagem = dadosErro
-        ? Object.entries(dadosErro).map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`).join(' | ')
-        : 'Não foi possível salvar. Tente novamente.';
+      let mensagem = 'Não foi possível salvar. Tente novamente.';
+      if (dadosErro && typeof dadosErro === 'object' && !Array.isArray(dadosErro)) {
+        mensagem = Object.entries(dadosErro)
+          .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+          .join(' | ');
+      } else if (err.response?.status) {
+        mensagem = `Erro ${err.response.status} no servidor. Tente novamente ou avise o suporte.`;
+      }
       setErro(mensagem);
     } finally {
       setSalvando(false);
