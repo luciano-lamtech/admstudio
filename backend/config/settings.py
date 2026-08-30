@@ -65,7 +65,7 @@ FRONTEND_BUILD_DIR = BASE_DIR / 'frontend_build'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [FRONTEND_BUILD_DIR],
+        'DIRS': [BASE_DIR / 'templates', FRONTEND_BUILD_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

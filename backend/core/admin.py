@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import Tenant
 
+admin.site.site_header = 'ADMSTUDIO - Administração'
+admin.site.site_title = 'ADMSTUDIO'
+admin.site.index_title = 'Painel de Administração Central'
+
 
 @admin.register(Tenant)
 class TenantAdmin(admin.ModelAdmin):

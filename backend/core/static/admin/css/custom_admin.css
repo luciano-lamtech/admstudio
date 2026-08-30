@@ -1,0 +1,33 @@
+/* ADMSTUDIO — personalização das cores do Django Admin (banco central) */
+:root {
+  --primary: #0d6efd;
+  --primary-fg: #fff;
+
+  --secondary: #1e2a38;
+  --accent: #3b82f6;
+
+  --header-color: #ffffff;
+  --header-branding-color: #3b82f6;
+  --header-bg: #1e2a38;
+  --header-link-color: #ffffff;
+
+  --breadcrumbs-fg: #dfe8f5;
+  --breadcrumbs-link-fg: #ffffff;
+  --breadcrumbs-bg: #16202b;
+
+  --link-fg: #0d6efd;
+  --link-hover-color: #3b82f6;
+  --link-selected-fg: #0d6efd;
+
+  --button-bg: #0d6efd;
+  --button-hover-bg: #0b5ed7;
+  --default-button-bg: #1e2a38;
+  --default-button-hover-bg: #16202b;
+
+  --selected-bg: #eaf1fb;
+  --selected-row: #eaf1fb;
+}
+
+#branding h1 {
+  font-weight: 700;
+}
