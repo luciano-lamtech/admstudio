@@ -1,12 +1,17 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 import re
+import MySQLdb
 
 from core.models import Tenant
 from authentication.utils import register_tenant_connection
 from authentication.middleware import set_current_tenant_alias
 from accounts.models import Role, MenuItem, User
 from accounts.menu_defaults import DEFAULT_MENU_ITEMS
+
+# Apps de tenant que possuem tabelas próprias (dashboard fica de fora —
+# não tem models, só consulta dados dos outros apps).
+APPS_DE_TENANT = ['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio']
 
 
 class Command(BaseCommand):
@@ -49,6 +54,35 @@ class Command(BaseCommand):
         parser.add_argument('--admin_senha', required=True)
         parser.add_argument('--admin_nome', default='Administrador')
 
+    def _garantir_banco_existe(self, tenant):
+        """
+        Tenta criar o banco de dados MySQL do tenant, caso ainda não exista.
+        Só funciona se o usuário MySQL informado tiver permissão de
+        CREATE DATABASE. Se não tiver, apenas avisa — nesse caso o banco
+        precisa ser criado manualmente antes de rodar o comando.
+        """
+        try:
+            conexao = MySQLdb.connect(
+                host=tenant.db_host,
+                user=tenant.db_user,
+                passwd=tenant.db_password,
+                port=int(tenant.db_port or 3306),
+            )
+            cursor = conexao.cursor()
+            cursor.execute(
+                f"CREATE DATABASE IF NOT EXISTS `{tenant.db_name}` "
+                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+            )
+            conexao.close()
+            self.stdout.write(self.style.SUCCESS(f'Banco "{tenant.db_name}" verificado/criado com sucesso.'))
+        except Exception as exc:
+            self.stdout.write(self.style.WARNING(
+                f'Não consegui criar o banco automaticamente ({exc}).\n'
+                f'  Se ele ainda não existir, crie manualmente antes de continuar '
+                f'(ou peça pro seu provedor liberar permissão de CREATE DATABASE '
+                f'para o usuário "{tenant.db_user}").'
+            ))
+
     def handle(self, *args, **options):
         cnpj_cpf = re.sub(r'\D', '', options['cnpj_cpf'])
 
@@ -84,11 +118,13 @@ class Command(BaseCommand):
             f"Tenant {'criado' if created else 'já existia (dados atualizados)'}: {tenant}"
         ))
 
+        self._garantir_banco_existe(tenant)
+
         alias = register_tenant_connection(tenant)
         set_current_tenant_alias(alias)
 
         self.stdout.write('Rodando migrações no banco do tenant...')
-        for app in ['accounts', 'clientes']:
+        for app in APPS_DE_TENANT:
             call_command('migrate', app, database=alias, interactive=False, verbosity=1)
 
         # Perfis de acesso padrão

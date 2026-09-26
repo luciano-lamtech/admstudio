@@ -31,8 +31,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--apps',
             nargs='+',
-            default=['accounts', 'clientes'],
-            help='Apps de tenant a migrar (padrão: accounts clientes).',
+            default=['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio'],
+            help='Apps de tenant a migrar (padrão: todos os módulos atuais).',
         )
 
     def handle(self, *args, **options):

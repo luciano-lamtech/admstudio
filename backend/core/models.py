@@ -52,3 +52,34 @@ class Tenant(models.Model):
     def alias(self):
         """Alias único usado para registrar a conexão dinâmica desse tenant."""
         return f"tenant_{self.cnpj_cpf}"
+
+
+class RoadmapItem(models.Model):
+    """
+    Checklist de evolução do ADMSTUDIO como produto (roadmap interno da
+    plataforma, não é uma funcionalidade de um tenant específico — por
+    isso fica só aqui no banco central, visível no /admin/).
+    """
+    FASE_CHOICES = (
+        ('fase_1', 'Fase 1 — Fechar o que já foi iniciado'),
+        ('fase_2', 'Fase 2 — Essenciais de mercado'),
+        ('fase_3', 'Fase 3 — Diferenciais competitivos'),
+        ('fase_4', 'Fase 4 — Preparação para comercializar'),
+    )
+
+    fase = models.CharField(max_length=10, choices=FASE_CHOICES)
+    titulo = models.CharField(max_length=150)
+    descricao = models.TextField(blank=True)
+    concluido = models.BooleanField(default=False)
+    ordem = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'roadmap_itens'
+        verbose_name = 'Item do Roadmap'
+        verbose_name_plural = 'Roadmap de Evolução'
+        ordering = ['fase', 'ordem']
+
+    def __str__(self):
+        return self.titulo
