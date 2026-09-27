@@ -1,15 +1,31 @@
-from rest_framework import generics
-from .models import User
-from .serializers import UserSerializer
+from rest_framework import viewsets
+from .models import User, Role
+from .serializers import UserManageSerializer, RoleSerializer
 
 
-class UsuarioListView(generics.ListAPIView):
+class RoleViewSet(viewsets.ModelViewSet):
     """
-    GET /api/usuarios/
-    Lista os usuários ativos do tenant (usado, por exemplo, para escolher
-    o profissional responsável num agendamento).
+    CRUD de Perfis de Acesso (Role).
+    GET/POST /api/usuarios/roles/
+    GET/PUT/PATCH/DELETE /api/usuarios/roles/{id}/
     """
-    serializer_class = UserSerializer
+    serializer_class = RoleSerializer
+    queryset = Role.objects.all().order_by('-nivel')
+
+
+class UsuarioManageViewSet(viewsets.ModelViewSet):
+    """
+    CRUD de usuários do tenant (tela Usuários e Perfis de Acesso), e
+    também usado para listar usuários em outras telas (ex: vincular um
+    profissional a um usuário de login).
+    GET/POST /api/usuarios/
+    GET/PUT/PATCH/DELETE /api/usuarios/{id}/
+    """
+    serializer_class = UserManageSerializer
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True).select_related('role')
+        qs = User.objects.select_related('role').all().order_by('nome')
+        busca = self.request.query_params.get('search')
+        if busca:
+            qs = qs.filter(nome__icontains=busca)
+        return qs

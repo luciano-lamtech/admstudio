@@ -14,6 +14,7 @@ import RelatoriosHub from './pages/Relatorios/RelatoriosHub';
 import RelatorioComissao from './pages/Relatorios/RelatorioComissao';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
+import UsuariosList from './pages/Usuarios/UsuariosList';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -52,7 +53,7 @@ export default function App() {
         <PrivateRoute><GestaoHub /></PrivateRoute>
       } />
       <Route path="/gestao/usuarios" element={
-        <PrivateRoute><PlaceholderPage titulo="Usuários e Perfis de Acesso" icone="bi-people-fill" /></PrivateRoute>
+        <PrivateRoute><UsuariosList /></PrivateRoute>
       } />
       <Route path="/gestao/profissionais" element={
         <PrivateRoute><ProfissionaisList /></PrivateRoute>
