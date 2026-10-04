@@ -24,6 +24,13 @@ const CARDS = [
     rota: '/gestao/profissionais',
   },
   {
+    titulo: 'Controle de Estoque',
+    descricao: 'Entradas, saídas e alerta de estoque baixo',
+    icone: 'bi-boxes',
+    cor: '#0891b2',
+    rota: '/gestao/estoque',
+  },
+  {
     titulo: 'Cadastro de Especialidades',
     descricao: 'Especialidades disponíveis para os profissionais',
     icone: 'bi-tags-fill',

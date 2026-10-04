@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'agendamentos',    # módulo de agendamento / ordem de serviço (por tenant)
     'financeiro',      # módulo financeiro (por tenant)
     'negocio',         # dados do negócio / unidades (por tenant)
+    'estoque',         # controle de estoque / movimentações (por tenant)
 ]
 
 MIDDLEWARE = [

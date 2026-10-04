@@ -3,7 +3,7 @@ import axiosClient from '../../api/axiosClient';
 
 const ITEM_VAZIO = {
   tipo: 'servico', nome: '', descricao: '', categoria: '', preco: '',
-  duracao_minutos: '', controla_estoque: false, estoque_atual: 0,
+  duracao_minutos: '', controla_estoque: false, estoque_atual: 0, estoque_minimo: 0,
 };
 
 export default function ServicosProdutosList() {
@@ -45,8 +45,10 @@ export default function ServicosProdutosList() {
         payload.duracao_minutos = form.duracao_minutos ? parseInt(form.duracao_minutos, 10) : null;
         payload.controla_estoque = false;
         payload.estoque_atual = 0;
+        payload.estoque_minimo = 0;
       } else {
         payload.duracao_minutos = null;
+        payload.estoque_minimo = parseInt(form.estoque_minimo, 10) || 0;
       }
 
       if (editandoId) {
@@ -129,9 +131,18 @@ export default function ServicosProdutosList() {
                   <td>{item.categoria || '—'}</td>
                   <td>R$ {parseFloat(item.preco).toFixed(2).replace('.', ',')}</td>
                   <td>
-                    {item.tipo === 'servico'
-                      ? (item.duracao_minutos ? `${item.duracao_minutos} min` : '—')
-                      : (item.controla_estoque ? `Estoque: ${item.estoque_atual}` : 'Sem controle de estoque')}
+                    {item.tipo === 'servico' ? (
+                      item.duracao_minutos ? `${item.duracao_minutos} min` : '—'
+                    ) : item.controla_estoque ? (
+                      <span className={item.estoque_atual <= item.estoque_minimo ? 'text-danger fw-semibold' : ''}>
+                        Estoque: {item.estoque_atual}
+                        {item.estoque_atual <= item.estoque_minimo && (
+                          <i className="bi bi-exclamation-triangle-fill ms-1" title="Estoque baixo"></i>
+                        )}
+                      </span>
+                    ) : (
+                      'Sem controle de estoque'
+                    )}
                   </td>
                   <td>
                     <span className={`badge rounded-pill ${item.ativo ? 'text-bg-success' : 'text-bg-secondary'}`}>
@@ -208,10 +219,20 @@ export default function ServicosProdutosList() {
                         </label>
                       </div>
                       {form.controla_estoque && (
-                        <div className="mb-2">
-                          <label className="form-label small">Estoque atual</label>
-                          <input type="number" min="0" className="form-control" value={form.estoque_atual}
-                            onChange={(e) => setForm({ ...form, estoque_atual: e.target.value })} />
+                        <div className="row g-2 mb-2">
+                          <div className="col-6">
+                            <label className="form-label small">Estoque atual</label>
+                            <input type="number" min="0" className="form-control" value={form.estoque_atual}
+                              onChange={(e) => setForm({ ...form, estoque_atual: e.target.value })} />
+                            <div className="form-text">
+                              Depois do cadastro, ajuste pela tela de Controle de Estoque (em Gestão).
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <label className="form-label small">Estoque mínimo</label>
+                            <input type="number" min="0" className="form-control" value={form.estoque_minimo}
+                              onChange={(e) => setForm({ ...form, estoque_minimo: e.target.value })} />
+                          </div>
                         </div>
                       )}
                     </>

@@ -28,6 +28,7 @@ class ItemCatalogo(models.Model):
     # Específico de Produto
     controla_estoque = models.BooleanField(default=False)
     estoque_atual = models.IntegerField(default=0)
+    estoque_minimo = models.IntegerField(default=0, help_text='Abaixo desse valor, o produto entra no alerta de estoque baixo.')
 
     ativo = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

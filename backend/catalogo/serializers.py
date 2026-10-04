@@ -10,5 +10,5 @@ class ItemCatalogoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'tipo', 'tipo_display', 'nome', 'descricao', 'categoria',
             'preco', 'duracao_minutos', 'controla_estoque', 'estoque_atual',
-            'ativo', 'created_at',
+            'estoque_minimo', 'ativo', 'created_at',
         ]

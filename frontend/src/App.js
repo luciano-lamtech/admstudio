@@ -15,6 +15,7 @@ import RelatorioComissao from './pages/Relatorios/RelatorioComissao';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
 import UsuariosList from './pages/Usuarios/UsuariosList';
+import EstoqueList from './pages/Estoque/EstoqueList';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -54,6 +55,9 @@ export default function App() {
       } />
       <Route path="/gestao/usuarios" element={
         <PrivateRoute><UsuariosList /></PrivateRoute>
+      } />
+      <Route path="/gestao/estoque" element={
+        <PrivateRoute><EstoqueList /></PrivateRoute>
       } />
       <Route path="/gestao/profissionais" element={
         <PrivateRoute><ProfissionaisList /></PrivateRoute>
