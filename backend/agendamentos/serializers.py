@@ -5,12 +5,13 @@ from .models import Agendamento, AgendamentoItem
 class AgendamentoItemSerializer(serializers.ModelSerializer):
     item_catalogo_nome = serializers.CharField(source='item_catalogo.nome', read_only=True)
     item_catalogo_tipo = serializers.CharField(source='item_catalogo.tipo', read_only=True)
+    item_catalogo_duracao = serializers.IntegerField(source='item_catalogo.duracao_minutos', read_only=True, default=None)
 
     class Meta:
         model = AgendamentoItem
         fields = [
             'id', 'item_catalogo', 'item_catalogo_nome', 'item_catalogo_tipo',
-            'quantidade', 'preco_unitario', 'subtotal',
+            'item_catalogo_duracao', 'quantidade', 'preco_unitario', 'subtotal',
         ]
         read_only_fields = ['subtotal']
 
