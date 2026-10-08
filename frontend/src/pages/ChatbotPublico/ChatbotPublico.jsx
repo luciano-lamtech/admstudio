@@ -1,20 +1,70 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
+import { dataLocalISO } from '../../utils/datas';
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+const ESTILO_BOTAO = {
+  border: '1px solid #d6e0ee',
+  background: '#ffffff',
+  color: '#1e2a38',
+  borderRadius: 999,
+  padding: '8px 14px',
+  fontSize: 14,
+  fontWeight: 500,
+  boxShadow: '0 1px 3px rgba(15,23,42,0.08)',
+  cursor: 'pointer',
+  transition: 'transform 0.1s, box-shadow 0.1s',
+};
+const ESTILO_BOTAO_PRIMARIO = {
+  ...ESTILO_BOTAO,
+  background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+  color: '#ffffff',
+  border: 'none',
+  boxShadow: '0 4px 12px rgba(59,130,246,0.35)',
+};
+const ESTILO_BOTAO_PERIGO = {
+  ...ESTILO_BOTAO,
+  color: '#dc2626',
+  borderColor: '#fecaca',
+};
+
+function Opcao({ children, onClick, estilo = ESTILO_BOTAO, className = '' }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={className}
+      style={estilo}
+      onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.96)')}
+      onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Próximos dias usando a data LOCAL (não UTC), e com exibição dd/mm/aaaa
 function proximosDias(qtd) {
   const dias = [];
   const hoje = new Date();
   for (let i = 0; i < qtd; i++) {
-    const d = new Date(hoje);
-    d.setDate(hoje.getDate() + i);
-    const iso = d.toISOString().slice(0, 10);
+    const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i);
+    const iso = dataLocalISO(d);
     const label = `${DIAS_SEMANA[d.getDay()]} ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
     dias.push({ iso, label });
   }
   return dias;
+}
+
+// 'aaaa-mm-dd' ou 'aaaa-mm-dd hh:mm' -> 'dd/mm/aaaa hh:mm'
+function formatarDataHora(texto) {
+  if (!texto) return '';
+  const [data, hora] = texto.split(' ');
+  const [ano, mes, dia] = data.split('-');
+  return hora ? `${dia}/${mes}/${ano} ${hora}` : `${dia}/${mes}/${ano}`;
 }
 
 export default function ChatbotPublico() {
@@ -51,7 +101,7 @@ export default function ChatbotPublico() {
       try {
         const res = await axiosClient.get(`/publico/${cnpj}/info/`);
         setNomeNegocio(res.data.nome);
-        bot(`Olá! 👋 Bem-vindo(a) ao ${res.data.nome}.`);
+        bot(`Olá! 👋 Bem-vindo(a) ao ${res.data.nome}. Responda com os botões abaixo!`);
         bot('O que você gostaria de fazer?');
         setEtapa('menu');
       } catch {
@@ -200,7 +250,7 @@ export default function ChatbotPublico() {
       } else {
         bot(`Encontrei ${res.data.length} agendamento(s):`);
         res.data.forEach((ag) => {
-          bot(`📌 ${ag.servicos.join(', ')} — ${ag.data_hora} — ${ag.status_display}${ag.profissional_nome ? ' — ' + ag.profissional_nome : ''}`);
+          bot(`📌 ${ag.servicos.join(', ')} — ${formatarDataHora(ag.data_hora)} — ${ag.status_display}${ag.profissional_nome ? ' — ' + ag.profissional_nome : ''}`);
         });
         bot('Posso ajudar em mais alguma coisa?');
         setEtapa('menu');
@@ -233,7 +283,7 @@ export default function ChatbotPublico() {
   }
 
   async function cancelarAgendamento(ag) {
-    usuario(`Cancelar: ${ag.servicos.join(', ')} — ${ag.data_hora}`);
+    usuario(`Cancelar: ${ag.servicos.join(', ')} — ${formatarDataHora(ag.data_hora)}`);
     setCarregandoOpcoes(true);
     try {
       await axiosClient.post(`/publico/${cnpj}/cancelar/`, { agendamento_id: ag.id, telefone: telefoneInput });
@@ -248,9 +298,9 @@ export default function ChatbotPublico() {
   }
 
   return (
-    <div className="d-flex flex-column vh-100" style={{ backgroundColor: '#e9edf2', maxWidth: 480, margin: '0 auto' }}>
-      {/* Cabeçalho */}
-      <div className="bg-dark text-white px-3 py-3 d-flex align-items-center gap-2">
+    <div className="d-flex flex-column" style={{ height: '100dvh', backgroundColor: '#e9edf2', maxWidth: 480, margin: '0 auto', overflow: 'hidden' }}>
+      {/* Cabeçalho fixo (não rola junto com as mensagens) */}
+      <div className="bg-dark text-white px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5 }}>
         <i className="bi bi-robot fs-4"></i>
         <div>
           <div className="fw-bold">{nomeNegocio || 'ADMSTUDIO'}</div>
@@ -259,7 +309,7 @@ export default function ChatbotPublico() {
       </div>
 
       {/* Mensagens */}
-      <div className="flex-grow-1 overflow-auto px-3 py-3">
+      <div className="px-3 py-3" style={{ flex: '1 1 auto', overflowY: 'auto', minHeight: 0 }}>
         {mensagens.map((m, i) => (
           <div key={i} className={`d-flex mb-2 ${m.autor === 'usuario' ? 'justify-content-end' : 'justify-content-start'}`}>
             <div
@@ -281,88 +331,88 @@ export default function ChatbotPublico() {
       </div>
 
       {/* Área de interação, muda conforme a etapa */}
-      <div className="bg-white border-top p-3">
+      <div className="bg-white border-top p-3" style={{ flex: '0 0 auto', paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}>
         {etapa === 'menu' && (
-          <div className="d-grid gap-2">
-            <button className="btn btn-primary" onClick={() => escolherMenu('agendar')}>📅 Agendar horário</button>
-            <button className="btn btn-outline-primary" onClick={() => escolherMenu('consultar')}>🔍 Consultar meus agendamentos</button>
-            <button className="btn btn-outline-danger" onClick={() => escolherMenu('cancelar')}>❌ Cancelar agendamento</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Opcao estilo={ESTILO_BOTAO_PRIMARIO} onClick={() => escolherMenu('agendar')}>📅 Agendar horário</Opcao>
+            <Opcao onClick={() => escolherMenu('consultar')}>🔍 Consultar meus agendamentos</Opcao>
+            <Opcao estilo={ESTILO_BOTAO_PERIGO} onClick={() => escolherMenu('cancelar')}>❌ Cancelar agendamento</Opcao>
           </div>
         )}
 
         {etapa === 'agendar_servico' && (
-          <div className="d-flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {servicos.map((s) => (
-              <button key={s.id} className="btn btn-outline-primary btn-sm" onClick={() => escolherServico(s)}>
-                {s.nome} — R$ {parseFloat(s.preco).toFixed(2).replace('.', ',')}
-              </button>
+              <Opcao key={s.id} onClick={() => escolherServico(s)}>
+                {{s.nome} — R$ {parseFloat(s.preco).toFixed(2).replace('.', ',')}}
+              </Opcao>
             ))}
           </div>
         )}
 
         {etapa === 'agendar_profissional' && (
-          <div className="d-flex flex-wrap gap-2">
-            <button className="btn btn-outline-secondary btn-sm" onClick={() => escolherProfissional(null)}>Sem preferência</button>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <Opcao onClick={() => escolherProfissional(null)}>Sem preferência</Opcao>
             {profissionais.map((p) => (
-              <button key={p.id} className="btn btn-outline-primary btn-sm" onClick={() => escolherProfissional(p)}>{p.nome}</button>
+              <Opcao key={p.id} onClick={() => escolherProfissional(p)}>{p.nome}</Opcao>
             ))}
           </div>
         )}
 
         {etapa === 'agendar_data' && (
-          <div className="d-flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {proximosDias(10).map((d) => (
-              <button key={d.iso} className="btn btn-outline-primary btn-sm" onClick={() => escolherData(d)}>{d.label}</button>
+              <Opcao key={d.iso} onClick={() => escolherData(d)}>{d.label}</Opcao>
             ))}
           </div>
         )}
 
         {etapa === 'agendar_horario' && (
-          <div className="d-flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {horarios.map((h) => (
-              <button key={h} className="btn btn-outline-primary btn-sm" onClick={() => escolherHorario(h)}>{h}</button>
+              <Opcao key={h} onClick={() => escolherHorario(h)}>{h}</Opcao>
             ))}
           </div>
         )}
 
         {etapa === 'agendar_nome' && (
           <form onSubmit={confirmarNome} className="d-flex gap-2">
-            <input className="form-control" autoFocus placeholder="Seu nome" value={nomeInput}
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="Seu nome" value={nomeInput}
               onChange={(e) => setNomeInput(e.target.value)} />
-            <button className="btn btn-primary" type="submit">Enviar</button>
+            <button type="submit" style={ESTILO_BOTAO_PRIMARIO}>Enviar</button>
           </form>
         )}
 
         {etapa === 'agendar_telefone' && (
           <form onSubmit={confirmarTelefone} className="d-flex gap-2">
-            <input className="form-control" autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
               onChange={(e) => setTelefoneInput(e.target.value)} />
-            <button className="btn btn-primary" type="submit">Confirmar</button>
+            <button type="submit" style={ESTILO_BOTAO_PRIMARIO}>Confirmar</button>
           </form>
         )}
 
         {etapa === 'consultar_telefone' && (
           <form onSubmit={consultarComTelefone} className="d-flex gap-2">
-            <input className="form-control" autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
               onChange={(e) => setTelefoneInput(e.target.value)} />
-            <button className="btn btn-primary" type="submit">Consultar</button>
+            <button type="submit" style={ESTILO_BOTAO_PRIMARIO}>Consultar</button>
           </form>
         )}
 
         {etapa === 'cancelar_telefone' && (
           <form onSubmit={buscarParaCancelar} className="d-flex gap-2">
-            <input className="form-control" autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
               onChange={(e) => setTelefoneInput(e.target.value)} />
-            <button className="btn btn-danger" type="submit">Buscar</button>
+            <button type="submit" style={ESTILO_BOTAO_PERIGO}>Buscar</button>
           </form>
         )}
 
         {etapa === 'cancelar_lista' && (
-          <div className="d-grid gap-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {agendamentos.map((ag) => (
-              <button key={ag.id} className="btn btn-outline-danger btn-sm text-start" onClick={() => cancelarAgendamento(ag)}>
-                {ag.servicos.join(', ')} — {ag.data_hora}
-              </button>
+              <Opcao key={ag.id} estilo={{ ...ESTILO_BOTAO_PERIGO, borderRadius: 14, textAlign: 'left' }} onClick={() => cancelarAgendamento(ag)}>
+                {ag.servicos.join(', ')} — {formatarDataHora(ag.data_hora)}
+              </Opcao>
             ))}
           </div>
         )}

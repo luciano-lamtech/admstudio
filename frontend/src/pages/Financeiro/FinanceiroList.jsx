@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
-
-function primeiroDiaMes() {
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
-}
-function hojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+import { hojeISO, primeiroDiaMesISO } from '../../utils/datas';
 
 const LANCAMENTO_VAZIO = {
   tipo: 'receita', categoria: '', descricao: '', valor: '',
@@ -24,7 +17,7 @@ const FORMAS_PAGAMENTO = [
 
 export default function FinanceiroList() {
   const [lancamentos, setLancamentos] = useState([]);
-  const [dataInicio, setDataInicio] = useState(primeiroDiaMes());
+  const [dataInicio, setDataInicio] = useState(primeiroDiaMesISO());
   const [dataFim, setDataFim] = useState(hojeISO());
   const [tipoFiltro, setTipoFiltro] = useState('todos');
 

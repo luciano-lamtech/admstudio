@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
-
-function primeiroDiaMes() {
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
-}
-function hojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+import { hojeISO, primeiroDiaMesISO } from '../../utils/datas';
 
 export default function RelatorioComissao() {
   const navigate = useNavigate();
-  const [dataInicio, setDataInicio] = useState(primeiroDiaMes());
+  const [dataInicio, setDataInicio] = useState(primeiroDiaMesISO());
   const [dataFim, setDataFim] = useState(hojeISO());
   const [profissionalFiltro, setProfissionalFiltro] = useState('');
   const [profissionais, setProfissionais] = useState([]);

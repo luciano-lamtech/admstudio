@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { hojeISO } from '../../utils/datas';
 
 const STATUS_LABELS = {
   agendado: { label: 'Agendado', cor: 'text-bg-secondary' },
@@ -8,10 +9,6 @@ const STATUS_LABELS = {
   concluido: { label: 'Concluído', cor: 'text-bg-success' },
   cancelado: { label: 'Cancelado', cor: 'text-bg-danger' },
 };
-
-function hojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 const AGENDAMENTO_VAZIO = {
   cliente: '', profissional: '', data_hora: '', status: 'agendado', observacoes: '', itens: [],

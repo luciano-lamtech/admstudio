@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 
 from django.utils import timezone
+from zoneinfo import ZoneInfo
+
+FUSO = ZoneInfo('America/Sao_Paulo')
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -82,8 +85,8 @@ class HorariosDisponiveisView(TenantPublicAPIView):
             ) or 30
             intervalos.append((ag.data_hora, ag.data_hora + timedelta(minutes=dur)))
 
-        inicio_expediente = timezone.make_aware(datetime.combine(data, datetime.min.time()).replace(hour=HORA_INICIO))
-        fim_expediente = timezone.make_aware(datetime.combine(data, datetime.min.time()).replace(hour=HORA_FIM))
+        inicio_expediente = datetime(data.year, data.month, data.day, HORA_INICIO, tzinfo=FUSO)
+        fim_expediente = datetime(data.year, data.month, data.day, HORA_FIM, tzinfo=FUSO)
 
         horarios = []
         atual = inicio_expediente
@@ -122,7 +125,7 @@ class AgendarPublicoView(TenantPublicAPIView):
             return Response({'detail': 'Serviço inválido.'}, status=400)
 
         try:
-            data_hora = timezone.make_aware(datetime.strptime(data_hora_str, '%Y-%m-%d %H:%M'))
+            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%d %H:%M').replace(tzinfo=FUSO)
         except ValueError:
             return Response({'detail': 'Data/hora inválida.'}, status=400)
 
@@ -176,7 +179,7 @@ class ConsultarPublicoView(TenantPublicAPIView):
 
         dados = [{
             'id': ag.id,
-            'data_hora': ag.data_hora.strftime('%Y-%m-%d %H:%M'),
+            'data_hora': timezone.localtime(ag.data_hora, FUSO).strftime('%Y-%m-%d %H:%M'),
             'status': ag.status,
             'status_display': ag.get_status_display(),
             'profissional_nome': ag.profissional.nome if ag.profissional else 'Sem profissional definido',
