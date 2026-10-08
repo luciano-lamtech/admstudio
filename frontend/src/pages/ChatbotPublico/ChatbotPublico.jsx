@@ -344,7 +344,7 @@ export default function ChatbotPublico() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {servicos.map((s) => (
               <Opcao key={s.id} onClick={() => escolherServico(s)}>
-                {{s.nome} — R$ {parseFloat(s.preco).toFixed(2).replace('.', ',')}}
+                {s.nome} — R$ {parseFloat(s.preco).toFixed(2).replace('.', ',')}
               </Opcao>
             ))}
           </div>
