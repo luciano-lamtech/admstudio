@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/financeiro/', include('financeiro.urls')),
     path('api/negocio/', include('negocio.urls')),
     path('api/estoque/', include('estoque.urls')),
+    path('api/publico/', include('publico.urls')),
     path('api/usuarios/', include('accounts.urls')),
 
     # Serve o React (SPA) para qualquer rota que não seja /api/ ou /admin/.

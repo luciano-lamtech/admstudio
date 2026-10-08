@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'financeiro',      # módulo financeiro (por tenant)
     'negocio',         # dados do negócio / unidades (por tenant)
     'estoque',         # controle de estoque / movimentações (por tenant)
+    'publico',         # API pública do chatbot de agendamento (sem login)
 ]
 
 MIDDLEWARE = [

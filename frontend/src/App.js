@@ -17,12 +17,16 @@ import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
 import UsuariosList from './pages/Usuarios/UsuariosList';
 import EstoqueList from './pages/Estoque/EstoqueList';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
+import ChatbotPublico from './pages/ChatbotPublico/ChatbotPublico';
 import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+
+      {/* Rota pública — não exige login, usada pelo chatbot de agendamento */}
+      <Route path="/chat/:cnpj" element={<ChatbotPublico />} />
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
