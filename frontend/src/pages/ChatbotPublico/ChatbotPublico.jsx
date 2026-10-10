@@ -300,11 +300,11 @@ export default function ChatbotPublico() {
   return (
     <div className="d-flex flex-column" style={{ height: '100dvh', backgroundColor: '#e9edf2', maxWidth: 480, margin: '0 auto', overflow: 'hidden' }}>
       {/* Cabeçalho fixo (não rola junto com as mensagens) */}
-      <div className="bg-dark text-white px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5 }}>
+      <div className="px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#dbeafe', color: '#1e3a8a', borderBottom: '1px solid #bfdbfe' }}>
         <i className="bi bi-robot fs-4"></i>
         <div>
           <div className="fw-bold">{nomeNegocio || 'ADMSTUDIO'}</div>
-          <div className="small text-white-50">Agendamento online</div>
+          <div className="small" style={{ color: '#3b82f6' }}>Agendamento online</div>
         </div>
       </div>
 

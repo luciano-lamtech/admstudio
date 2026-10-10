@@ -1,6 +1,9 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from zoneinfo import ZoneInfo
+
+FUSO = ZoneInfo('America/Sao_Paulo')
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
 from rest_framework.views import APIView
@@ -23,7 +26,7 @@ class DashboardResumoView(APIView):
         clientes_ativos = Cliente.objects.filter(ativo=True).count()
         clientes_inativos = Cliente.objects.filter(ativo=False).count()
 
-        hoje = timezone.now().date()
+        hoje = timezone.now().astimezone(FUSO).date()
 
         agendamentos_hoje = Agendamento.objects.filter(
             data_hora__date=hoje,

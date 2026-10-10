@@ -110,7 +110,7 @@ class AgendarPublicoView(TenantPublicAPIView):
             return erro
 
         dados = request.data
-        nome = (dados.get('cliente_nome') or '').strip()
+        nome = (dados.get('cliente_nome') or '').strip().upper()
         telefone = (dados.get('cliente_telefone') or '').strip()
         servico_id = dados.get('servico_id')
         profissional_id = dados.get('profissional_id') or None
@@ -169,8 +169,9 @@ class ConsultarPublicoView(TenantPublicAPIView):
         if not telefone:
             return Response({'detail': 'Informe o telefone.'}, status=400)
 
+        inicio_hoje = timezone.now().astimezone(FUSO).replace(hour=0, minute=0, second=0, microsecond=0)
         agendamentos = (
-            Agendamento.objects.filter(cliente__telefone=telefone)
+            Agendamento.objects.filter(cliente__telefone=telefone, data_hora__gte=inicio_hoje)
             .exclude(status='cancelado')
             .select_related('profissional')
             .prefetch_related('itens__item_catalogo')
@@ -200,8 +201,11 @@ class CancelarPublicoView(TenantPublicAPIView):
         agendamento_id = request.data.get('agendamento_id')
         telefone = (request.data.get('telefone') or '').strip()
 
+        inicio_hoje = timezone.now().astimezone(FUSO).replace(hour=0, minute=0, second=0, microsecond=0)
         try:
-            agendamento = Agendamento.objects.get(pk=agendamento_id, cliente__telefone=telefone)
+            agendamento = Agendamento.objects.get(
+                pk=agendamento_id, cliente__telefone=telefone, data_hora__gte=inicio_hoje,
+            )
         except Agendamento.DoesNotExist:
             return Response({'detail': 'Agendamento não encontrado para esse telefone.'}, status=404)
 
