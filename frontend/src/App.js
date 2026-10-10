@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientesList from './pages/Clientes/ClientesList';
+import ProntuarioPage from './pages/Prontuario/ProntuarioPage';
 import ServicosProdutosList from './pages/ServicosProdutos/ServicosProdutosList';
 import AgendamentosList from './pages/Agendamentos/AgendamentosList';
 import FinanceiroList from './pages/Financeiro/FinanceiroList';
@@ -32,6 +33,10 @@ export default function App() {
 
       <Route path="/dashboard" element={
         <PrivateRoute><Dashboard /></PrivateRoute>
+      } />
+
+      <Route path="/clientes/:id/prontuario" element={
+        <PrivateRoute><ProntuarioPage /></PrivateRoute>
       } />
 
       <Route path="/clientes" element={

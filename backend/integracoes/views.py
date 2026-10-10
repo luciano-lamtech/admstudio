@@ -130,20 +130,22 @@ class RespostaClienteView(IntegracaoAPIView):
             .first()
         )
 
+        instancia = self.instancia_dict()
+
         if ag is None or resposta not in ('1', '2'):
             if ag is not None:
                 ag.resposta_whatsapp = (request.data.get('texto') or '')[:200]
                 ag.respondido_em = agora
                 ag.save(update_fields=['resposta_whatsapp', 'respondido_em'])
-            return Response({'acao': 'nenhuma', 'mensagem': texto_automatico(salao)})
+            return Response({'acao': 'nenhuma', 'mensagem': texto_automatico(salao), 'instancia': instancia})
 
         ag.resposta_whatsapp = resposta
         ag.respondido_em = agora
         if resposta == '1':
             ag.status = 'confirmado'
             ag.save(update_fields=['status', 'resposta_whatsapp', 'respondido_em'])
-            return Response({'acao': 'confirmado', 'mensagem': texto_confirmado(salao)})
+            return Response({'acao': 'confirmado', 'mensagem': texto_confirmado(salao), 'instancia': instancia})
 
         ag.status = 'cancelado'
         ag.save(update_fields=['status', 'resposta_whatsapp', 'respondido_em'])
-        return Response({'acao': 'cancelado', 'mensagem': texto_cancelado(salao)})
+        return Response({'acao': 'cancelado', 'mensagem': texto_cancelado(salao), 'instancia': instancia})
