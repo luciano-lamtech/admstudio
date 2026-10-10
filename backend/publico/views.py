@@ -129,6 +129,31 @@ class AgendarPublicoView(TenantPublicAPIView):
         except ValueError:
             return Response({'detail': 'Data/hora inválida.'}, status=400)
 
+        # Bloqueia se este telefone já tem agendamento ATIVO que se sobrepõe
+        # no horário, mesmo com outro profissional. Compara intervalos
+        # (início + duração), não só a hora exata.
+        duracao_novo = servico.duracao_minutos or 30
+        inicio_novo = data_hora
+        fim_novo = data_hora + timedelta(minutes=duracao_novo)
+
+        existentes = (
+            Agendamento.objects.filter(cliente__telefone=telefone)
+            .exclude(status__in=['cancelado', 'concluido'])
+            .prefetch_related('itens__item_catalogo')
+        )
+        for ag in existentes:
+            dur_existente = sum(
+                (i.item_catalogo.duracao_minutos or 0) * i.quantidade
+                for i in ag.itens.all() if i.item_catalogo.tipo == 'servico'
+            ) or 30
+            inicio_existente = ag.data_hora
+            fim_existente = ag.data_hora + timedelta(minutes=dur_existente)
+            if inicio_novo < fim_existente and fim_novo > inicio_existente:
+                return Response(
+                    {'detail': 'Você já tem um agendamento neste horário com outro profissional. Escolha outro horário.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
         cliente = Cliente.objects.filter(telefone=telefone).first()
         if cliente:
             if cliente.nome != nome:

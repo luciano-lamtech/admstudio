@@ -236,7 +236,11 @@ export default function ChatbotPublico() {
       setTelefoneInput('');
       setEscolha({});
     } catch (err) {
+      // Cancela o processo: mostra o motivo, limpa os dados e volta ao menu
       bot(err.response?.data?.detail || 'Não consegui confirmar o agendamento. Tente novamente.');
+      setNomeInput('');
+      setTelefoneInput('');
+      setEscolha({});
       setEtapa('menu');
     } finally {
       setCarregandoOpcoes(false);
@@ -308,11 +312,11 @@ export default function ChatbotPublico() {
   return (
     <div className="d-flex flex-column" style={{ height: '100dvh', backgroundColor: '#e9edf2', maxWidth: 480, margin: '0 auto', overflow: 'hidden' }}>
       {/* Cabeçalho fixo (não rola junto com as mensagens) */}
-      <div className="px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#e5e7eb', color: '#1f2937', borderBottom: '1px solid #d1d5db' }}>
+      <div className="px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#4b5563', color: '#ffffff', borderBottom: '1px solid #374151' }}>
         <i className="bi bi-robot fs-4"></i>
         <div>
           <div className="fw-bold">{nomeNegocio || 'ADMSTUDIO'}</div>
-          <div className="small" style={{ color: '#6b7280' }}>Agendamento online</div>
+          <div className="small" style={{ color: '#ffffff', opacity: 0.85 }}>Agendamento online</div>
         </div>
       </div>
 
