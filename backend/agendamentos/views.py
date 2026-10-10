@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Agendamento
 from .serializers import AgendamentoSerializer
+from historico.service import usuario_da_requisicao, registrar_exclusao
 
 
 class AgendamentoViewSet(viewsets.ModelViewSet):
@@ -14,6 +15,11 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
     Filtros: ?data=YYYY-MM-DD  ?status=agendado  ?cliente=<id>
     """
     serializer_class = AgendamentoSerializer
+
+    def perform_destroy(self, instance):
+        uid, unome = usuario_da_requisicao(self.request)
+        registrar_exclusao(instance, uid, unome)
+        instance.delete()
 
     def get_queryset(self):
         qs = Agendamento.objects.select_related('cliente', 'profissional').prefetch_related('itens__item_catalogo')

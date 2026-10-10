@@ -11,7 +11,7 @@ from accounts.menu_defaults import DEFAULT_MENU_ITEMS
 
 # Apps de tenant que possuem tabelas próprias (dashboard fica de fora —
 # não tem models, só consulta dados dos outros apps).
-APPS_DE_TENANT = ['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio', 'estoque', 'prontuario']
+APPS_DE_TENANT = ['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio', 'estoque', 'prontuario', 'historico']
 
 
 class Command(BaseCommand):

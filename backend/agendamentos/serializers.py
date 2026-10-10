@@ -1,5 +1,11 @@
+from decimal import Decimal
+
 from rest_framework import serializers
+
 from .models import Agendamento, AgendamentoItem
+from historico.service import (
+    usuario_da_requisicao, snapshot, registrar_criacao, registrar_alteracoes,
+)
 
 
 class AgendamentoItemSerializer(serializers.ModelSerializer):
@@ -32,16 +38,24 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         read_only_fields = ['valor_total']
 
     def create(self, validated_data):
+        request = self.context.get('request')
         itens_data = validated_data.pop('itens', [])
         agendamento = Agendamento.objects.create(**validated_data)
         self._salvar_itens(agendamento, itens_data)
         agendamento.recalcular_total()
+
+        uid, unome = usuario_da_requisicao(request)
+        registrar_criacao(agendamento, uid, unome)
+
         if agendamento.status == 'concluido':
             self._gerar_receita(agendamento)
         return agendamento
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
+        antes = snapshot(instance)
         status_anterior = instance.status
+
         itens_data = validated_data.pop('itens', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -50,24 +64,13 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             instance.itens.all().delete()
             self._salvar_itens(instance, itens_data)
         instance.recalcular_total()
+
+        uid, unome = usuario_da_requisicao(request)
+        registrar_alteracoes(antes, instance, uid, unome)
+
         if instance.status == 'concluido' and status_anterior != 'concluido':
             self._gerar_receita(instance)
         return instance
-
-    def _gerar_receita(self, agendamento):
-        # Import local para evitar dependência circular entre os apps
-        from financeiro.models import Lancamento
-        if Lancamento.objects.filter(agendamento=agendamento).exists():
-            return  # já existe uma receita gerada para esse agendamento
-        Lancamento.objects.create(
-            tipo='receita',
-            categoria='Atendimento',
-            descricao=f'Atendimento - {agendamento.cliente.nome}',
-            valor=agendamento.valor_total,
-            status='pendente',  # aguarda ser recebido no Caixa
-            data=agendamento.data_hora.date(),
-            agendamento=agendamento,
-        )
 
     def _salvar_itens(self, agendamento, itens_data):
         for item_data in itens_data:
@@ -78,3 +81,17 @@ class AgendamentoSerializer(serializers.ModelSerializer):
                 quantidade=item_data.get('quantidade', 1),
                 preco_unitario=preco,
             )
+
+    def _gerar_receita(self, agendamento):
+        from financeiro.models import Lancamento
+        if Lancamento.objects.filter(agendamento=agendamento).exists():
+            return
+        Lancamento.objects.create(
+            tipo='receita',
+            categoria='Atendimento',
+            descricao=f'Atendimento - {agendamento.cliente.nome}',
+            valor=agendamento.valor_total,
+            status='pendente',
+            data=agendamento.data_hora.date(),
+            agendamento=agendamento,
+        )

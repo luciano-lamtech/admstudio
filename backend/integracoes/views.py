@@ -7,6 +7,7 @@ from rest_framework import status
 from .base import IntegracaoAPIView, FUSO
 from .mensagens import texto_lembrete, texto_confirmado, texto_cancelado, texto_automatico
 from agendamentos.models import Agendamento
+from historico.service import registrar_status
 
 
 def _telefone_whatsapp(telefone):
@@ -141,11 +142,14 @@ class RespostaClienteView(IntegracaoAPIView):
 
         ag.resposta_whatsapp = resposta
         ag.respondido_em = agora
+        status_antes = ag.status
         if resposta == '1':
             ag.status = 'confirmado'
             ag.save(update_fields=['status', 'resposta_whatsapp', 'respondido_em'])
+            registrar_status(ag, status_antes, 'Cliente (WhatsApp)')
             return Response({'acao': 'confirmado', 'mensagem': texto_confirmado(salao), 'instancia': instancia})
 
         ag.status = 'cancelado'
         ag.save(update_fields=['status', 'resposta_whatsapp', 'respondido_em'])
+        registrar_status(ag, status_antes, 'Cliente (WhatsApp)')
         return Response({'acao': 'cancelado', 'mensagem': texto_cancelado(salao), 'instancia': instancia})

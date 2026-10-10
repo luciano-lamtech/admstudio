@@ -138,8 +138,8 @@ export default function ClientesList() {
                     </span>
                   </td>
                   <td className="text-end pe-3">
-                    <button className="btn btn-sm btn-outline-success me-1" title="Prontuário" onClick={() => navigate(`/clientes/${c.id}/prontuario`)}>
-                      <i className="bi bi-journal-medical"></i>
+                    <button className="btn btn-sm btn-outline-success me-1" title="Histórico" onClick={() => navigate(`/clientes/${c.id}/historico`)}>
+                      <i className="bi bi-clock-history"></i>
                     </button>
                     <button className="btn btn-sm btn-primary me-1" title="Editar" onClick={() => editar(c)}>
                       <i className="bi bi-pencil"></i>

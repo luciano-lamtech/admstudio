@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .base import TenantPublicAPIView
+from historico.service import registrar_criacao, registrar_status
 from catalogo.models import ItemCatalogo
 from profissionais.models import Profissional
 from clientes.models import Cliente
@@ -176,6 +177,7 @@ class AgendarPublicoView(TenantPublicAPIView):
             preco_unitario=servico.preco,
         )
         agendamento.recalcular_total()
+        registrar_criacao(agendamento, usuario_nome='Chatbot público')
 
         return Response({
             'agendamento_id': agendamento.id,
@@ -237,6 +239,8 @@ class CancelarPublicoView(TenantPublicAPIView):
         if agendamento.status == 'concluido':
             return Response({'detail': 'Esse atendimento já foi concluído e não pode ser cancelado.'}, status=400)
 
+        status_antes = agendamento.status
         agendamento.status = 'cancelado'
         agendamento.save(update_fields=['status'])
+        registrar_status(agendamento, status_antes, 'Cliente (chatbot)')
         return Response({'mensagem': 'Agendamento cancelado com sucesso.'})
