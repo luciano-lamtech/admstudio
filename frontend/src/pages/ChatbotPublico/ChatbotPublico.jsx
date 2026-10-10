@@ -5,6 +5,14 @@ import { dataLocalISO } from '../../utils/datas';
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+// Deixa só dígitos (sem espaço, traço, parênteses) e remove o zero inicial
+// do DDD (ex: 016991234567 vira 16991234567). Máximo de 11 dígitos
+// (DDD + 9 dígitos do celular).
+function normalizarTelefone(texto) {
+  const somenteDigitos = (texto || '').replace(/\D/g, '');
+  return somenteDigitos.replace(/^0+/, '').slice(0, 11);
+}
+
 const ESTILO_BOTAO = {
   border: '1px solid #d6e0ee',
   background: '#ffffff',
@@ -119,11 +127,11 @@ export default function ChatbotPublico() {
       iniciarAgendamento();
     } else if (opcao === 'consultar') {
       usuario('🔍 Consultar meus agendamentos');
-      bot('Beleza! Me informa o telefone que você usou no agendamento:');
+      bot('Beleza! Me informa o telefone que você usou no agendamento, somente números com DDD (ex: 16991234567):');
       setEtapa('consultar_telefone');
     } else if (opcao === 'cancelar') {
       usuario('❌ Cancelar agendamento');
-      bot('Sem problema. Me informa o telefone que você usou no agendamento:');
+      bot('Sem problema. Me informa o telefone que você usou no agendamento, somente números com DDD (ex: 16991234567):');
       setEtapa('cancelar_telefone');
     }
   }
@@ -201,7 +209,7 @@ export default function ChatbotPublico() {
     e.preventDefault();
     if (!nomeInput.trim()) return;
     usuario(nomeInput);
-    bot('E o seu telefone/WhatsApp (com DDD):');
+    bot('E o seu telefone/WhatsApp? Digite somente números, com DDD (ex: 16991234567):');
     setEtapa('agendar_telefone');
   }
 
@@ -215,7 +223,7 @@ export default function ChatbotPublico() {
       bot(`Confirmando: ${resumo}`);
       const payload = {
         cliente_nome: nomeInput,
-        cliente_telefone: telefoneInput,
+        cliente_telefone: normalizarTelefone(telefoneInput),
         servico_id: escolha.servico.id,
         profissional_id: escolha.profissional?.id || null,
         data_hora: `${escolha.data.iso} ${escolha.hora}`,
@@ -242,7 +250,7 @@ export default function ChatbotPublico() {
     usuario(telefoneInput);
     setCarregandoOpcoes(true);
     try {
-      const res = await axiosClient.post(`/publico/${cnpj}/consultar/`, { telefone: telefoneInput });
+      const res = await axiosClient.post(`/publico/${cnpj}/consultar/`, { telefone: normalizarTelefone(telefoneInput) });
       setAgendamentos(res.data);
       if (res.data.length === 0) {
         bot('Não encontrei nenhum agendamento com esse telefone.');
@@ -268,7 +276,7 @@ export default function ChatbotPublico() {
     usuario(telefoneInput);
     setCarregandoOpcoes(true);
     try {
-      const res = await axiosClient.post(`/publico/${cnpj}/consultar/`, { telefone: telefoneInput });
+      const res = await axiosClient.post(`/publico/${cnpj}/consultar/`, { telefone: normalizarTelefone(telefoneInput) });
       setAgendamentos(res.data);
       if (res.data.length === 0) {
         bot('Não encontrei nenhum agendamento ativo com esse telefone.');
@@ -286,7 +294,7 @@ export default function ChatbotPublico() {
     usuario(`Cancelar: ${ag.servicos.join(', ')} — ${formatarDataHora(ag.data_hora)}`);
     setCarregandoOpcoes(true);
     try {
-      await axiosClient.post(`/publico/${cnpj}/cancelar/`, { agendamento_id: ag.id, telefone: telefoneInput });
+      await axiosClient.post(`/publico/${cnpj}/cancelar/`, { agendamento_id: ag.id, telefone: normalizarTelefone(telefoneInput) });
       bot('Agendamento cancelado com sucesso. Posso ajudar em mais alguma coisa?');
       setEtapa('menu');
       setTelefoneInput('');
@@ -300,11 +308,11 @@ export default function ChatbotPublico() {
   return (
     <div className="d-flex flex-column" style={{ height: '100dvh', backgroundColor: '#e9edf2', maxWidth: 480, margin: '0 auto', overflow: 'hidden' }}>
       {/* Cabeçalho fixo (não rola junto com as mensagens) */}
-      <div className="px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#dbeafe', color: '#1e3a8a', borderBottom: '1px solid #bfdbfe' }}>
+      <div className="px-3 py-3 d-flex align-items-center gap-2" style={{ flex: '0 0 auto', position: 'sticky', top: 0, zIndex: 5, backgroundColor: '#e5e7eb', color: '#1f2937', borderBottom: '1px solid #d1d5db' }}>
         <i className="bi bi-robot fs-4"></i>
         <div>
           <div className="fw-bold">{nomeNegocio || 'ADMSTUDIO'}</div>
-          <div className="small" style={{ color: '#3b82f6' }}>Agendamento online</div>
+          <div className="small" style={{ color: '#6b7280' }}>Agendamento online</div>
         </div>
       </div>
 
@@ -385,24 +393,24 @@ export default function ChatbotPublico() {
 
         {etapa === 'agendar_telefone' && (
           <form onSubmit={confirmarTelefone} className="d-flex gap-2">
-            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
-              onChange={(e) => setTelefoneInput(e.target.value)} />
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus inputMode="numeric" placeholder="Ex: 16991234567" value={telefoneInput}
+              onChange={(e) => setTelefoneInput(normalizarTelefone(e.target.value))} />
             <button type="submit" style={ESTILO_BOTAO_PRIMARIO}>Confirmar</button>
           </form>
         )}
 
         {etapa === 'consultar_telefone' && (
           <form onSubmit={consultarComTelefone} className="d-flex gap-2">
-            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
-              onChange={(e) => setTelefoneInput(e.target.value)} />
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus inputMode="numeric" placeholder="Ex: 16991234567" value={telefoneInput}
+              onChange={(e) => setTelefoneInput(normalizarTelefone(e.target.value))} />
             <button type="submit" style={ESTILO_BOTAO_PRIMARIO}>Consultar</button>
           </form>
         )}
 
         {etapa === 'cancelar_telefone' && (
           <form onSubmit={buscarParaCancelar} className="d-flex gap-2">
-            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus placeholder="(99) 99999-9999" value={telefoneInput}
-              onChange={(e) => setTelefoneInput(e.target.value)} />
+            <input className="form-control" style={{ borderRadius: 999, padding: '8px 14px' }} autoFocus inputMode="numeric" placeholder="Ex: 16991234567" value={telefoneInput}
+              onChange={(e) => setTelefoneInput(normalizarTelefone(e.target.value))} />
             <button type="submit" style={ESTILO_BOTAO_PERIGO}>Buscar</button>
           </form>
         )}
