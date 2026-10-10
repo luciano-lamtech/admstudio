@@ -39,8 +39,15 @@ export default function HistoricoPage() {
         <i className="bi bi-arrow-left me-1"></i> Clientes
       </button>
 
-      <h3 className="fw-bold mb-0">Histórico</h3>
-      <div className="text-muted mb-3">{cliente?.nome}</div>
+      <div className="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h3 className="fw-bold mb-0">Histórico</h3>
+          <div className="text-muted">{cliente?.nome}</div>
+        </div>
+        <button className="btn btn-outline-primary" onClick={() => navigate(`/clientes/${id}/perfil`)}>
+          <i className="bi bi-person-vcard me-1"></i> Perfil do Cliente
+        </button>
+      </div>
 
       {erro && <div className="alert alert-danger py-2 small">{erro}</div>}
 
