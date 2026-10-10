@@ -1,6 +1,35 @@
 import re
+import secrets
 
 from django.db import models
+
+
+class InstanciaWhatsApp(models.Model):
+    """
+    Instância da Evolution API disponível para envio de WhatsApp.
+    Gerenciada no /admin/ pelo dono da plataforma. Cada assinante é
+    vinculado a uma (ou nenhuma) instância, e você pode ter várias
+    instâncias para distribuir a carga entre muitos clientes.
+    """
+    nome = models.CharField(max_length=100, help_text='Nome de identificação, ex: Instância 01')
+    url_base = models.CharField(max_length=200, help_text='URL da Evolution API, ex: https://evolution.seudominio.com')
+    nome_instancia = models.CharField(max_length=100, help_text='Nome da instância criada na Evolution')
+    api_key = models.CharField(max_length=200, help_text='apikey da instância (ou global da Evolution)')
+    numero = models.CharField(max_length=20, blank=True, help_text='Número conectado (informativo)')
+    intervalo_segundos = models.PositiveSmallIntegerField(
+        default=5, help_text='Intervalo mínimo entre envios por esta instância (evita bloqueio).',
+    )
+    ativo = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'instancias_whatsapp'
+        verbose_name = 'Instância WhatsApp'
+        verbose_name_plural = 'Instâncias WhatsApp'
+        ordering = ['nome']
+
+    def __str__(self):
+        return f'{self.nome} ({self.nome_instancia})'
 
 
 class Tenant(models.Model):
@@ -30,6 +59,13 @@ class Tenant(models.Model):
 
     is_active = models.BooleanField(default=True)
     plano = models.CharField(max_length=50, default='basico')
+
+    # Integração (n8n): token que autentica o n8n em nome deste assinante
+    token_integracao = models.CharField(max_length=64, unique=True, blank=True, null=True)
+    # Instância da Evolution que envia os WhatsApp deste assinante
+    instancia_whatsapp = models.ForeignKey(
+        InstanciaWhatsApp, on_delete=models.SET_NULL, null=True, blank=True, related_name='assinantes',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,7 +74,12 @@ class Tenant(models.Model):
         verbose_name = 'Assinante'
         verbose_name_plural = 'Assinantes'
 
+    def gerar_novo_token(self):
+        self.token_integracao = secrets.token_urlsafe(32)
+
     def save(self, *args, **kwargs):
+        if not self.token_integracao:
+            self.gerar_novo_token()
         # Garante que o CNPJ/CPF seja sempre salvo só com números,
         # independente de como foi digitado (com ou sem pontuação).
         if self.cnpj_cpf:

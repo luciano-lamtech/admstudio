@@ -23,6 +23,10 @@ class Agendamento(models.Model):
     data_hora = models.DateTimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='agendado')
     observacoes = models.TextField(blank=True)
+    # Controle do lembrete via WhatsApp
+    lembrete_enviado_em = models.DateTimeField(null=True, blank=True)
+    resposta_whatsapp = models.CharField(max_length=200, blank=True, help_text='Última resposta recebida do cliente')
+    respondido_em = models.DateTimeField(null=True, blank=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
