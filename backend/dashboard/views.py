@@ -23,8 +23,8 @@ class DashboardResumoView(APIView):
 
     def get(self, request):
         total_clientes = Cliente.objects.count()
-        clientes_ativos = Cliente.objects.filter(ativo=True).count()
-        clientes_inativos = Cliente.objects.filter(ativo=False).count()
+        clientes_ativos = Cliente.objects.filter(status='ativo').count()
+        clientes_inativos = Cliente.objects.exclude(status='ativo').count()
 
         hoje = timezone.now().astimezone(FUSO).date()
 
