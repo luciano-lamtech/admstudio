@@ -25,6 +25,13 @@ class UserManageSerializer(serializers.ModelSerializer):
     senha = serializers.CharField(write_only=True, required=False, allow_blank=True)
     role_nome = serializers.CharField(source='role.nome', read_only=True, default=None)
 
+    def validate_role(self, role):
+        from .permissions import nivel_do_token
+        request = self.context.get('request')
+        if role and request is not None and role.nivel > nivel_do_token(request):
+            raise serializers.ValidationError('Você não pode atribuir um perfil acima do seu nível de acesso.')
+        return role
+
     class Meta:
         model = User
         fields = ['id', 'email', 'nome', 'role', 'role_nome', 'is_active', 'senha', 'created_at']

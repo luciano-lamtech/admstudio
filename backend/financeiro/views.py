@@ -1,3 +1,5 @@
+from accounts.permissions import criar_permissao
+Caixa = criar_permissao(2, 7, {'receber': 2})
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -6,6 +8,8 @@ from .serializers import LancamentoSerializer
 
 
 class LancamentoViewSet(viewsets.ModelViewSet):
+    permission_classes = [Caixa]
+
     """
     CRUD de lançamentos financeiros (receitas e despesas).
     Filtros: ?tipo=receita|despesa  ?status=pago|pendente

@@ -1,3 +1,5 @@
+from accounts.permissions import criar_permissao
+Nivel7 = criar_permissao(7)
 from rest_framework import viewsets
 from .models import MovimentacaoEstoque
 from .serializers import MovimentacaoEstoqueSerializer
@@ -5,6 +7,8 @@ from accounts.models import User
 
 
 class MovimentacaoEstoqueViewSet(viewsets.ModelViewSet):
+    permission_classes = [Nivel7]
+
     """
     Histórico de movimentações de estoque.
     GET /api/estoque/?item=<id>

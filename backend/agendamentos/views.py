@@ -1,3 +1,5 @@
+from accounts.permissions import criar_permissao
+Nivel7 = criar_permissao(7)
 from decimal import Decimal
 
 from django.db.models import Sum, Count
@@ -36,6 +38,8 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
 
 
 class RelatorioComissaoView(APIView):
+    permission_classes = [Nivel7]
+
     """
     GET /api/agendamentos/relatorio-comissao/?data_inicio=YYYY-MM-DD&data_fim=YYYY-MM-DD
     Relatório de comissão por profissional, calculado sobre os

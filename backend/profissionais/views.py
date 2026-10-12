@@ -1,9 +1,15 @@
+from accounts.permissions import criar_permissao
+Nivel7 = criar_permissao(1, 7)
+from accounts.permissions import criar_permissao
+Nivel7 = criar_permissao(1, 7)
 from rest_framework import viewsets
 from .models import Profissional, Especialidade
 from .serializers import ProfissionalSerializer, EspecialidadeSerializer
 
 
 class EspecialidadeViewSet(viewsets.ModelViewSet):
+    permission_classes = [Nivel7]
+
     """CRUD de Especialidades. Filtros: ?search=nome  ?ativo=true"""
     serializer_class = EspecialidadeSerializer
 
@@ -18,6 +24,8 @@ class EspecialidadeViewSet(viewsets.ModelViewSet):
 
 
 class ProfissionalViewSet(viewsets.ModelViewSet):
+    permission_classes = [Nivel7]
+
     """
     CRUD de Profissionais.
     Filtros: ?search=nome  ?ativo=true

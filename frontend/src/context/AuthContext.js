@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import axiosClient from '../api/axiosClient';
 
 const AuthContext = createContext(null);
@@ -16,6 +16,18 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem('admstudio_menu');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Ao abrir o sistema (ou recarregar a página), busca o menu atual do servidor.
+  // Assim, itens novos aparecem sem precisar sair e entrar de novo.
+  useEffect(() => {
+    if (!localStorage.getItem('admstudio_access')) return;
+    axiosClient.get('/usuarios/menu/')
+      .then((r) => {
+        setMenu(r.data);
+        localStorage.setItem('admstudio_menu', JSON.stringify(r.data));
+      })
+      .catch(() => {});
+  }, []);
 
   async function login(email, senha, id) {
     const response = await axiosClient.post('/auth/login/', { email, senha, id });
