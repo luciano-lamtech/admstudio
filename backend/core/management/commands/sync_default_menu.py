@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 set_current_tenant_alias(alias)
                 criados = 0
                 for item in DEFAULT_MENU_ITEMS:
-                    _, created = MenuItem.objects.using(alias).get_or_create(
+                    _, created = MenuItem.objects.using(alias).update_or_create(
                         rota=item['rota'],
                         defaults={k: v for k, v in item.items() if k != 'rota'},
                     )

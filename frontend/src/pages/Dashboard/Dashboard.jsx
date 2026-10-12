@@ -56,7 +56,7 @@ export default function Dashboard() {
     <div>
       {/* Cards */}
       <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
-        <CardMetrica titulo="Clientes Ativos" valor={resumo?.clientes_ativos ?? '—'} subtitulo="Ativos" cor="#d6eaf8" />
+        <CardMetrica titulo="Clientes" valor={resumo?.total_clientes ?? '—'} subtitulo="Total" cor="#d6eaf8" />
         <CardMetrica titulo="Agendamentos Hoje" valor={resumo?.agendamentos_hoje ?? '—'} subtitulo="Excluindo cancelados" cor="#fdf3d0" />
         <CardMetrica
           titulo="Atendimentos concluídos hoje"
