@@ -30,6 +30,8 @@ class ItemCatalogo(models.Model):
     estoque_atual = models.IntegerField(default=0)
     estoque_minimo = models.IntegerField(default=0, help_text='Abaixo desse valor, o produto entra no alerta de estoque baixo.')
 
+    # QR Code Pix da conta que recebe este item (imagem em data URL, gravada manualmente)
+    qrcode_pix = models.TextField(blank=True, default='')
     ativo = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

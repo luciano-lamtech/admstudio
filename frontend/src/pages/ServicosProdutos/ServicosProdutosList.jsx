@@ -17,6 +17,8 @@ export default function ServicosProdutosList() {
   const [form, setForm] = useState(ITEM_VAZIO);
   const [editandoId, setEditandoId] = useState(null);
   const [salvando, setSalvando] = useState(false);
+  const [qrImagem, setQrImagem] = useState(null);
+  const [qrAtual, setQrAtual] = useState(false);
 
   async function carregar() {
     const params = { search: busca || undefined };
@@ -30,13 +32,24 @@ export default function ServicosProdutosList() {
   function abrirNovo() {
     setForm(ITEM_VAZIO);
     setEditandoId(null);
+    setQrImagem(null);
     setMostrarForm(true);
   }
 
   function editar(item) {
     setForm(item);
     setEditandoId(item.id);
+    setQrAtual(!!item.tem_qrcode);
+    setQrImagem(null);
     setMostrarForm(true);
+  }
+
+  function escolherQr(e) {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+    const leitor = new FileReader();
+    leitor.onload = () => setQrImagem(leitor.result);
+    leitor.readAsDataURL(arquivo);
   }
 
   async function salvar(e) {
@@ -54,10 +67,15 @@ export default function ServicosProdutosList() {
         payload.estoque_minimo = parseInt(form.estoque_minimo, 10) || 0;
       }
 
+      let itemId = editandoId;
       if (editandoId) {
         await axiosClient.put(`/catalogo/${editandoId}/`, payload);
       } else {
-        await axiosClient.post('/catalogo/', payload);
+        const r = await axiosClient.post('/catalogo/', payload);
+        itemId = r.data.id;
+      }
+      if (qrImagem && itemId) {
+        await axiosClient.post(`/catalogo/${itemId}/qrcode/`, { imagem: qrImagem });
       }
       setMostrarForm(false);
       carregar();
@@ -246,6 +264,16 @@ export default function ServicosProdutosList() {
                     <textarea className="form-control" rows="2" value={form.descricao || ''}
                       onChange={(e) => setForm({ ...form, descricao: e.target.value })} />
                   </div>
+                </div>
+                <div className="px-3 pb-2">
+                  <label className="form-label small fw-semibold">QR Code Pix (conta que recebe)</label>
+                  <div className="small text-muted mb-1">
+                    {qrAtual && !qrImagem ? 'QR cadastrado. ' : 'Sem QR cadastrado. '}
+                    Ao alterar o preço, o QR atual sai e precisa ser enviado de novo.
+                  </div>
+                  <input type="file" accept="image/png,image/jpeg,image/webp"
+                    className="form-control form-control-sm" onChange={escolherQr} />
+                  {qrImagem && <img src={qrImagem} alt="QR Pix" className="img-fluid mt-2" style={{ maxHeight: 180 }} />}
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setMostrarForm(false)}>Cancelar</button>

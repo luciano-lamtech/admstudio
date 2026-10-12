@@ -9,12 +9,59 @@ const FORMAS_PAGAMENTO = [
   { valor: 'outro', label: 'Outro' },
 ];
 
+function ModalPix({ pendencia, onFechar }) {
+  const [imagens, setImagens] = useState({});
+  const itens = pendencia.itens_agendamento || [];
+
+  useEffect(() => {
+    itens.filter((i) => i.tem_qrcode).forEach((i) => {
+      axiosClient.get(`/catalogo/${i.item_id}/qrcode/`)
+        .then((r) => setImagens((m) => ({ ...m, [i.item_id]: r.data.imagem })))
+        .catch(() => {});
+    });
+  }, [pendencia]); // eslint-disable-line
+
+  return (
+    <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1060 }} onClick={onFechar}>
+      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title fw-bold">Pagamento via Pix</h5>
+            <button className="btn-close" onClick={onFechar}></button>
+          </div>
+          <div className="modal-body">
+            <div className="small text-muted mb-3">{pendencia.descricao}</div>
+            {itens.length === 0 && (
+              <div className="text-center text-muted">Esta pendência não tem itens de agendamento.</div>
+            )}
+            {itens.map((i) => (
+              <div key={i.item_id} className="border rounded p-3 mb-2 text-center">
+                <div className="fw-semibold">{i.nome}{i.quantidade > 1 ? ` x${i.quantidade}` : ''}</div>
+                <div className="small mb-2">R$ {parseFloat(i.preco).toFixed(2).replace('.', ',')}</div>
+                {!i.tem_qrcode && <div className="small text-danger">QR Code não cadastrado para este item.</div>}
+                {i.tem_qrcode && !imagens[i.item_id] && <div className="small text-muted">Carregando QR Code...</div>}
+                {i.tem_qrcode && imagens[i.item_id] && (
+                  <img src={imagens[i.item_id]} alt={`QR ${i.nome}`} className="img-fluid" style={{ maxWidth: 240 }} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-primary" onClick={onFechar}>Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CaixaList() {
   const [pendencias, setPendencias] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [pendenciaSelecionada, setPendenciaSelecionada] = useState(null);
   const [formaPagamento, setFormaPagamento] = useState('dinheiro');
   const [processando, setProcessando] = useState(false);
+  const [mostrarPix, setMostrarPix] = useState(false);
 
   async function carregar() {
     const res = await axiosClient.get('/financeiro/', {
@@ -99,6 +146,10 @@ export default function CaixaList() {
         </div>
       </div>
 
+      {mostrarPix && pendenciaSelecionada && (
+        <ModalPix pendencia={pendenciaSelecionada} onFechar={() => setMostrarPix(false)} />
+      )}
+
       {/* Modal de recebimento */}
       {mostrarModal && (
         <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setMostrarModal(false)}>
@@ -116,7 +167,10 @@ export default function CaixaList() {
                   </p>
                   <label className="form-label small">Forma de Pagamento</label>
                   <select className="form-select" value={formaPagamento}
-                    onChange={(e) => setFormaPagamento(e.target.value)}>
+                    onChange={(e) => {
+                      setFormaPagamento(e.target.value);
+                      if (e.target.value === 'pix') setMostrarPix(true);
+                    }}>
                     {FORMAS_PAGAMENTO.map((f) => <option key={f.valor} value={f.valor}>{f.label}</option>)}
                   </select>
                 </div>
