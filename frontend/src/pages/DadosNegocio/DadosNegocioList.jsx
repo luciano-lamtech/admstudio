@@ -21,6 +21,7 @@ export default function DadosNegocioList() {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState('');
   const [buscandoCep, setBuscandoCep] = useState(false);
+  const [qrGeralAtual, setQrGeralAtual] = useState(false);
 
   async function carregar() {
     const res = await axiosClient.get('/negocio/');
@@ -69,8 +70,39 @@ export default function DadosNegocioList() {
   function editar(u) {
     setForm({ ...UNIDADE_VAZIA, ...u });
     setEditandoId(u.id);
+    setQrGeralAtual(!!u.tem_qrcode_geral);
     setErro('');
     setMostrarForm(true);
+  }
+
+  function lerArquivo(arquivo) {
+    return new Promise((resolve, reject) => {
+      const leitor = new FileReader();
+      leitor.onload = () => resolve(leitor.result);
+      leitor.onerror = reject;
+      leitor.readAsDataURL(arquivo);
+    });
+  }
+
+  async function enviarQrGeral(e) {
+    const arquivo = e.target.files[0];
+    if (!arquivo || !editandoId) return;
+    setErro('');
+    try {
+      const imagem = await lerArquivo(arquivo);
+      await axiosClient.post(`/negocio/${editandoId}/qrcode-geral/`, { imagem });
+      setQrGeralAtual(true);
+      carregar();
+    } catch (err) {
+      setErro(err.response?.data?.imagem?.[0] || 'Não foi possível enviar o QR Code.');
+    }
+  }
+
+  async function removerQrGeral() {
+    if (!window.confirm('Remover o QR Pix geral desta unidade?')) return;
+    await axiosClient.delete(`/negocio/${editandoId}/qrcode-geral/`);
+    setQrGeralAtual(false);
+    carregar();
   }
 
   async function salvar(e) {
@@ -277,6 +309,29 @@ export default function DadosNegocioList() {
                   </div>
 
                   <hr className="my-3" />
+                  <div className="border rounded p-3 mb-3 bg-light">
+                    <label className="form-label small fw-semibold">QR Code Pix Geral</label>
+                    <div className="small text-muted mb-2">
+                      Envie um QR Code <strong>sem valor fixo</strong>, gerado no app do banco da conta que recebe.
+                      O valor é digitado pelo cliente (ou pelo caixa) no momento do pagamento.
+                      Ele é usado no Caixa quando o atendimento tiver mais de um item, ou quando o item não tiver QR próprio.
+                    </div>
+                    {!editandoId && (
+                      <div className="small text-warning">Salve a unidade primeiro, depois envie o QR Code.</div>
+                    )}
+                    {editandoId && (
+                      <>
+                        <div className="small mb-2">{qrGeralAtual ? 'QR Code cadastrado.' : 'Sem QR Code cadastrado.'}</div>
+                        <input type="file" accept="image/png,image/jpeg,image/webp"
+                          className="form-control form-control-sm" onChange={enviarQrGeral} />
+                        {qrGeralAtual && (
+                          <button type="button" className="btn btn-sm btn-outline-danger mt-2" onClick={removerQrGeral}>
+                            Remover QR Code
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                   <div className="mb-2">
                     <label className="form-label small">Status</label>
                     <div>

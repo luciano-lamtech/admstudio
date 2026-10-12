@@ -34,6 +34,9 @@ class UnidadeNegocio(models.Model):
     # no plano do assinante).
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_analise')
 
+    # QR Pix geral: sem valor fixo, o cliente digita o valor no app do banco
+    qrcode_pix_geral = models.TextField(blank=True, default='')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

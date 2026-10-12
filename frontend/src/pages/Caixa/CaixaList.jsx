@@ -10,15 +10,23 @@ const FORMAS_PAGAMENTO = [
 ];
 
 function ModalPix({ pendencia, onFechar }) {
-  const [imagens, setImagens] = useState({});
+  const [qrGeral, setQrGeral] = useState(undefined); // undefined = carregando
+  const [imagemItem, setImagemItem] = useState(null);
   const itens = pendencia.itens_agendamento || [];
+  const unico = itens.length === 1 ? itens[0] : null;
+  // Usa o QR do item (valor fixo) só quando há um único item e ele tem QR próprio
+  const usaQrDoItem = !!(unico && unico.tem_qrcode);
+  const total = `R$ ${parseFloat(pendencia.valor).toFixed(2).replace('.', ',')}`;
 
   useEffect(() => {
-    itens.filter((i) => i.tem_qrcode).forEach((i) => {
-      axiosClient.get(`/catalogo/${i.item_id}/qrcode/`)
-        .then((r) => setImagens((m) => ({ ...m, [i.item_id]: r.data.imagem })))
+    axiosClient.get('/negocio/qrcode-geral/')
+      .then((r) => setQrGeral(r.data.imagem || null))
+      .catch(() => setQrGeral(null));
+    if (usaQrDoItem) {
+      axiosClient.get(`/catalogo/${unico.item_id}/qrcode/`)
+        .then((r) => setImagemItem(r.data.imagem))
         .catch(() => {});
-    });
+    }
   }, [pendencia]); // eslint-disable-line
 
   return (
@@ -29,22 +37,31 @@ function ModalPix({ pendencia, onFechar }) {
             <h5 className="modal-title fw-bold">Pagamento via Pix</h5>
             <button className="btn-close" onClick={onFechar}></button>
           </div>
-          <div className="modal-body">
+          <div className="modal-body text-center">
             <div className="small text-muted mb-3">{pendencia.descricao}</div>
-            {itens.length === 0 && (
-              <div className="text-center text-muted">Esta pendência não tem itens de agendamento.</div>
-            )}
-            {itens.map((i) => (
-              <div key={i.item_id} className="border rounded p-3 mb-2 text-center">
-                <div className="fw-semibold">{i.nome}{i.quantidade > 1 ? ` x${i.quantidade}` : ''}</div>
-                <div className="small mb-2">R$ {parseFloat(i.preco).toFixed(2).replace('.', ',')}</div>
-                {!i.tem_qrcode && <div className="small text-danger">QR Code não cadastrado para este item.</div>}
-                {i.tem_qrcode && !imagens[i.item_id] && <div className="small text-muted">Carregando QR Code...</div>}
-                {i.tem_qrcode && imagens[i.item_id] && (
-                  <img src={imagens[i.item_id]} alt={`QR ${i.nome}`} className="img-fluid" style={{ maxWidth: 240 }} />
+
+            {usaQrDoItem ? (
+              <>
+                <div className="fw-semibold">{unico.nome}</div>
+                <div className="fs-5 fw-bold mb-2">R$ {parseFloat(unico.preco).toFixed(2).replace('.', ',')}</div>
+                {imagemItem
+                  ? <img src={imagemItem} alt="QR Pix do item" className="img-fluid" style={{ maxWidth: 260 }} />
+                  : <div className="small text-muted">Carregando QR Code...</div>}
+              </>
+            ) : (
+              <>
+                <div className="alert alert-warning py-2 small">
+                  Digite exatamente o valor <strong>{total}</strong> no app do banco.
+                </div>
+                {qrGeral === undefined && <div className="small text-muted">Carregando QR Code...</div>}
+                {qrGeral === null && (
+                  <div className="small text-danger">
+                    QR Pix geral não cadastrado. Cadastre em Configurações → Dados do Negócio.
+                  </div>
                 )}
-              </div>
-            ))}
+                {qrGeral && <img src={qrGeral} alt="QR Pix geral" className="img-fluid" style={{ maxWidth: 260 }} />}
+              </>
+            )}
           </div>
           <div className="modal-footer">
             <button className="btn btn-primary" onClick={onFechar}>Fechar</button>

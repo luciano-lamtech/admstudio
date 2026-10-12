@@ -4,11 +4,15 @@ from .models import UnidadeNegocio
 
 class UnidadeNegocioSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    tem_qrcode_geral = serializers.SerializerMethodField()
 
     class Meta:
         model = UnidadeNegocio
         fields = [
             'id', 'nome_empresa', 'cnpj_cpf', 'nome_contato', 'telefone_contato',
             'email', 'telegram_id', 'cep', 'pais', 'endereco', 'numero', 'bairro',
-            'cidade', 'estado', 'status', 'status_display', 'created_at',
+            'cidade', 'estado', 'status', 'status_display', 'created_at', 'tem_qrcode_geral',
         ]
+
+    def get_tem_qrcode_geral(self, obj):
+        return bool(obj.qrcode_pix_geral)
