@@ -40,9 +40,19 @@ class LancamentoViewSet(viewsets.ModelViewSet):
         body: { "forma_pagamento": "pix" }
         Dá baixa num lançamento pendente do Caixa, marcando como Pago.
         """
+        from .saldo import marcar_devedor, liberar_se_quitado
         lancamento = self.get_object()
         forma_pagamento = request.data.get('forma_pagamento', lancamento.forma_pagamento)
-        lancamento.status = 'pago'
-        lancamento.forma_pagamento = forma_pagamento
-        lancamento.save()
+        if forma_pagamento == 'saldo_devedor':
+            # Fica no Caixa como pendente, marcado como Saldo Devedor
+            lancamento.forma_pagamento = 'saldo_devedor'
+            lancamento.status = 'pendente'
+            lancamento.save(update_fields=['forma_pagamento', 'status'])
+            marcar_devedor(lancamento)
+        else:
+            # Quitado: registra a forma e, se não houver mais saldo devedor, libera o cliente
+            lancamento.forma_pagamento = forma_pagamento
+            lancamento.status = 'pago'
+            lancamento.save(update_fields=['forma_pagamento', 'status'])
+            liberar_se_quitado(lancamento)
         return Response(LancamentoSerializer(lancamento).data, status=status.HTTP_200_OK)

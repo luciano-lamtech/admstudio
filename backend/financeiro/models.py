@@ -14,7 +14,7 @@ class Lancamento(models.Model):
         ('pix', 'Pix'),
         ('cartao_credito', 'Cartão de Crédito'),
         ('cartao_debito', 'Cartão de Débito'),
-        ('outro', 'Outro'),
+        ('saldo_devedor', 'Saldo Devedor'),
     )
     STATUS_CHOICES = (
         ('pago', 'Pago'),

@@ -6,7 +6,7 @@ const FORMAS_PAGAMENTO = [
   { valor: 'pix', label: 'Pix' },
   { valor: 'cartao_credito', label: 'Cartão de Crédito' },
   { valor: 'cartao_debito', label: 'Cartão de Débito' },
-  { valor: 'outro', label: 'Outro' },
+  { valor: 'saldo_devedor', label: 'Saldo Devedor' },
 ];
 
 function ModalPix({ pendencia, onFechar }) {
@@ -146,6 +146,7 @@ export default function CaixaList() {
                   <td className="fw-semibold">
                     {p.descricao}
                     {p.cliente_nome && <div className="small text-muted">Cliente: {p.cliente_nome}</div>}
+                    {p.forma_pagamento === 'saldo_devedor' && <span className="badge text-bg-danger">Saldo devedor</span>}
                   </td>
                   <td className="fw-bold">R$ {parseFloat(p.valor).toFixed(2).replace('.', ',')}</td>
                   <td className="text-end pe-3">
@@ -194,7 +195,7 @@ export default function CaixaList() {
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setMostrarModal(false)}>Cancelar</button>
                   <button type="submit" className="btn btn-success" disabled={processando}>
-                    {processando ? 'Confirmando...' : 'Confirmar Recebimento'}
+                    {processando ? 'Salvando...' : formaPagamento === 'saldo_devedor' ? 'Salvar pendência' : 'Confirmar Recebimento'}
                   </button>
                 </div>
               </form>
