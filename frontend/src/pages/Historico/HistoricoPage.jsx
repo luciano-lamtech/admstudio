@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
-import { useAuth } from '../../context/AuthContext';
 
 const TIPOS = {
   agendamento_criado: { label: 'Agendamento criado', cor: 'text-bg-primary' },
@@ -18,8 +17,6 @@ const TIPOS = {
 export default function HistoricoPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const podeVerPerfil = (user?.role?.nivel ?? 0) >= 3;
   const [cliente, setCliente] = useState(null);
   const [eventos, setEventos] = useState([]);
   const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -47,7 +44,7 @@ export default function HistoricoPage() {
           <h3 className="fw-bold mb-0">Histórico</h3>
           <div className="text-muted">{cliente?.nome}</div>
         </div>
-        {podeVerPerfil && (
+        {(
           <button className="btn btn-outline-primary" onClick={() => navigate(`/clientes/${id}/perfil`)}>
             <i className="bi bi-person-vcard me-1"></i> Perfil do Cliente
           </button>

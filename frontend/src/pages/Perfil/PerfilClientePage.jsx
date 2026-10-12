@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
+import { useAuth } from '../../context/AuthContext';
 
 const PERFIL_VAZIO = {
   alergias: '', medicamentos: '', condicoes_saude: '', gestante: false, tipo_pele: '',
@@ -28,6 +29,8 @@ function CampoTexto({ rotulo, valor, onChange }) {
 export default function PerfilClientePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const podeEditar = (user?.role?.nivel ?? 0) >= 3;
   const [cliente, setCliente] = useState(null);
   const [form, setForm] = useState(PERFIL_VAZIO);
   const [salvando, setSalvando] = useState(false);
@@ -72,6 +75,7 @@ export default function PerfilClientePage() {
       {aviso && <div className="alert alert-success py-2 small">{aviso}</div>}
 
       <form onSubmit={salvar} className="card border-0 shadow-sm">
+        <fieldset disabled={!podeEditar} className="border-0 p-0 m-0">
         <div className="card-body">
           <div className="row g-2">
             <div className="col-md-6"><CampoTexto rotulo="Alergias" valor={form.alergias} onChange={set('alergias')} /></div>
@@ -108,11 +112,12 @@ export default function PerfilClientePage() {
           </div>
 
           <div className="text-end mt-3">
-            <button type="submit" className="btn btn-primary" disabled={salvando}>
+{podeEditar && (<button type="submit" className="btn btn-primary" disabled={salvando}>
               {salvando ? 'Salvando...' : 'Salvar perfil'}
-            </button>
+            </button>)}
           </div>
         </div>
+        </fieldset>
       </form>
     </div>
   );

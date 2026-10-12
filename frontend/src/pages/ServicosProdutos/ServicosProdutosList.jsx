@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { useAuth } from '../../context/AuthContext';
 
 const ITEM_VAZIO = {
   tipo: 'servico', nome: '', descricao: '', categoria: '', preco: '',
@@ -7,6 +8,8 @@ const ITEM_VAZIO = {
 };
 
 export default function ServicosProdutosList() {
+  const { user } = useAuth();
+  const podeEditar = (user?.role?.nivel ?? 0) >= 3;
   const [itens, setItens] = useState([]);
   const [busca, setBusca] = useState('');
   const [tipoFiltro, setTipoFiltro] = useState('todos');
@@ -73,9 +76,9 @@ export default function ServicosProdutosList() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="fw-bold mb-0">Serviços e Produtos</h3>
-        <button className="btn btn-primary" onClick={abrirNovo}>
+{podeEditar && (<button className="btn btn-primary" onClick={abrirNovo}>
           <i className="bi bi-plus-lg me-1"></i> Novo Item
-        </button>
+        </button>)}
       </div>
 
       {/* Contador */}
@@ -150,12 +153,12 @@ export default function ServicosProdutosList() {
                     </span>
                   </td>
                   <td className="text-end pe-3">
-                    <button className="btn btn-sm btn-primary me-1" title="Editar" onClick={() => editar(item)}>
+{podeEditar && (<button className="btn btn-sm btn-primary me-1" title="Editar" onClick={() => editar(item)}>
                       <i className="bi bi-pencil"></i>
-                    </button>
-                    <button className="btn btn-sm btn-danger" title="Excluir" onClick={() => excluir(item.id)}>
+                    </button>)}
+{podeEditar && (<button className="btn btn-sm btn-danger" title="Excluir" onClick={() => excluir(item.id)}>
                       <i className="bi bi-trash"></i>
-                    </button>
+                    </button>)}
                   </td>
                 </tr>
               ))}

@@ -5,13 +5,13 @@ from rest_framework.views import APIView
 
 from clientes.models import Cliente
 from .models import Anamnese
-from .permissions import PodeVerProntuario
+from .permissions import PodeVerPerfilCliente
 from .serializers import AnamneseSerializer
 
 
 class AnamneseView(APIView):
     """Perfil do Cliente: GET e PUT da ficha do cliente."""
-    permission_classes = [PodeVerProntuario]
+    permission_classes = [PodeVerPerfilCliente]
 
     def get(self, request, cliente_id):
         cliente = get_object_or_404(Cliente, pk=cliente_id)

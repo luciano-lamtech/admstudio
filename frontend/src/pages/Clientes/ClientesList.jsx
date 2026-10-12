@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import axiosClient from '../../api/axiosClient';
 
 const STATUS_INFO = {
@@ -16,6 +17,8 @@ const CLIENTE_VAZIO = {
 
 export default function ClientesList() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const podeEditar = (user?.role?.nivel ?? 0) >= 3;
   const [clientes, setClientes] = useState([]);
   const [busca, setBusca] = useState('');
   const [statusFiltro, setStatusFiltro] = useState('todos');
@@ -88,9 +91,9 @@ export default function ClientesList() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="fw-bold mb-0">Clientes</h3>
-        <button className="btn btn-primary" onClick={abrirNovo}>
+{podeEditar && (<button className="btn btn-primary" onClick={abrirNovo}>
           <i className="bi bi-plus-lg me-1"></i> Novo Cliente
-        </button>
+        </button>)}
       </div>
 
       <div className="bg-dark text-white rounded-3 px-4 py-3 mb-3 d-flex align-items-center gap-2">
@@ -141,12 +144,12 @@ export default function ClientesList() {
                     <button className="btn btn-sm btn-outline-success me-1" title="Histórico" onClick={() => navigate(`/clientes/${c.id}/historico`)}>
                       <i className="bi bi-clock-history"></i>
                     </button>
-                    <button className="btn btn-sm btn-primary me-1" title="Editar" onClick={() => editar(c)}>
+{podeEditar && (<button className="btn btn-sm btn-primary me-1" title="Editar" onClick={() => editar(c)}>
                       <i className="bi bi-pencil"></i>
-                    </button>
-                    <button className="btn btn-sm btn-danger" title="Excluir" onClick={() => excluir(c.id)}>
+                    </button>)}
+{podeEditar && (<button className="btn btn-sm btn-danger" title="Excluir" onClick={() => excluir(c.id)}>
                       <i className="bi bi-trash"></i>
-                    </button>
+                    </button>)}
                   </td>
                 </tr>
               ))}

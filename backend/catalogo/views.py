@@ -1,9 +1,12 @@
+from accounts.permissions import criar_permissao
+Nivel3 = criar_permissao(1, 3)
 from rest_framework import viewsets
 from .models import ItemCatalogo
 from .serializers import ItemCatalogoSerializer
 
 
 class ItemCatalogoViewSet(viewsets.ModelViewSet):
+    permission_classes = [Nivel3]
     """
     CRUD de Serviços e Produtos.
     GET/POST /api/catalogo/
