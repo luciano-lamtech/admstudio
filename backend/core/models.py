@@ -55,6 +55,11 @@ class Tenant(models.Model):
     db_host = models.CharField(max_length=150)
     db_user = models.CharField(max_length=100)
     db_password = models.CharField(max_length=200)
+    usa_servidor_central = models.BooleanField(
+        default=False,
+        help_text='Marque para usar o mesmo servidor (host e porta) do banco central. '
+                  'Assim, trocar o servidor do central muda o dos assinantes marcados.',
+    )
     db_port = models.CharField(max_length=6, default='3306')
 
     is_active = models.BooleanField(default=True)

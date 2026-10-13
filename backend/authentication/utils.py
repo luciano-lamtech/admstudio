@@ -1,4 +1,17 @@
+from django.conf import settings
 from django.db import connections
+
+
+def _host(tenant):
+    if tenant.usa_servidor_central:
+        return settings.DATABASES['default']['HOST']
+    return tenant.db_host
+
+
+def _porta(tenant):
+    if tenant.usa_servidor_central:
+        return str(settings.DATABASES['default']['PORT'])
+    return tenant.db_port
 
 
 def register_tenant_connection(tenant):
@@ -15,8 +28,8 @@ def register_tenant_connection(tenant):
             'NAME': tenant.db_name,
             'USER': tenant.db_user,
             'PASSWORD': tenant.db_password,
-            'HOST': tenant.db_host,
-            'PORT': tenant.db_port,
+            'HOST': _host(tenant),
+            'PORT': _porta(tenant),
             'OPTIONS': {'charset': 'utf8mb4'},
             'ATOMIC_REQUESTS': False,
             'AUTOCOMMIT': True,

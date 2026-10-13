@@ -4,7 +4,7 @@ import re
 import MySQLdb
 
 from core.models import Tenant
-from authentication.utils import register_tenant_connection
+from authentication.utils import register_tenant_connection, _host, _porta
 from authentication.middleware import set_current_tenant_alias
 from accounts.models import Role, MenuItem, User
 from accounts.menu_defaults import DEFAULT_MENU_ITEMS
@@ -63,10 +63,10 @@ class Command(BaseCommand):
         """
         try:
             conexao = MySQLdb.connect(
-                host=tenant.db_host,
+                host=_host(tenant),
                 user=tenant.db_user,
                 passwd=tenant.db_password,
-                port=int(tenant.db_port or 3306),
+                port=int(_porta(tenant) or 3306),
             )
             cursor = conexao.cursor()
             cursor.execute(

@@ -38,7 +38,7 @@ class TenantAdmin(admin.ModelAdmin):
             'fields': ('cnpj_cpf', 'razao_social', 'nome_fantasia', 'tipo_negocio', 'plano', 'is_active'),
         }),
         ('Banco de dados do assinante', {
-            'fields': ('db_name', 'db_host', 'db_port', 'db_user', 'db_password'),
+            'fields': ('usa_servidor_central', 'db_name', 'db_host', 'db_port', 'db_user', 'db_password'),
         }),
         ('WhatsApp / Integração (n8n)', {
             'fields': ('instancia_whatsapp', 'token_integracao'),
