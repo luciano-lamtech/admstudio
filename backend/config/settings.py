@@ -12,6 +12,9 @@ SECRET_KEY = config('SECRET_KEY', default='dev-secret-key-troque-em-producao')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
+# Caminho secreto do painel admin. Troque por uma variável no EasyPanel (ex: admin26714025328732440898)
+ADMIN_URL_PATH = config('ADMIN_URL_PATH', default='admin').strip('/')
+
 # Domínios com permissão para enviar formulários (proteção CSRF do Django).
 # Precisa ser a URL COMPLETA, com https://, sem caminho no final.
 # Ex: CSRF_TRUSTED_ORIGINS=https://plataformas-admstudio.sqkz99.easypanel.host,https://admstudio.seudominio.com
