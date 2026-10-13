@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h2>Provisionar {{ tenant.nome_fantasia|default:tenant.razao_social }}</h2>
+<p>
+  Cria o banco de dados (se o usuário tiver permissão), todas as tabelas dos módulos,
+  os perfis de acesso, o menu lateral e o usuário administrador deste assinante.
+</p>
+<form method="post">
+  {% csrf_token %}
+  <div style="margin-bottom:12px">
+    <label>E-mail do administrador do assinante<br>
+      <input type="email" name="admin_email" required style="width:320px"></label>
+  </div>
+  <div style="margin-bottom:12px">
+    <label>Senha do administrador<br>
+      <input type="password" name="admin_senha" required style="width:320px"></label>
+  </div>
+  <div style="margin-bottom:12px">
+    <label>Nome do administrador<br>
+      <input type="text" name="admin_nome" value="Administrador" style="width:320px"></label>
+  </div>
+  <button type="submit" class="default">Provisionar assinante</button>
+</form>
+{% endblock %}
