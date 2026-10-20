@@ -24,6 +24,13 @@ const CARDS = [
     rota: '/gestao/profissionais',
   },
   {
+    titulo: 'Pacotes e Planos',
+    descricao: 'Pacotes de sessões à venda e preços',
+    icone: 'bi-ticket-perforated',
+    cor: '#7c3aed',
+    rota: '/gestao/pacotes',
+  },
+  {
     titulo: 'Controle de Estoque',
     descricao: 'Entradas, saídas e alerta de estoque baixo',
     icone: 'bi-boxes',

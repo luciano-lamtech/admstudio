@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/integracoes/', include('integracoes.urls')),
     path('api/prontuario/', include('prontuario.urls')),
     path('api/historico/', include('historico.urls')),
+    path('api/pacotes/', include('pacotes.urls')),
 
     # Serve o React (SPA) para qualquer rota que não seja /api/ ou /admin/.
     # O próprio React Router cuida do roteamento no navegador a partir daqui.

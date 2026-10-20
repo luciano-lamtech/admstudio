@@ -19,6 +19,8 @@ import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
 import UsuariosList from './pages/Usuarios/UsuariosList';
 import EstoqueList from './pages/Estoque/EstoqueList';
+import PacotesList from './pages/Pacotes/PacotesList';
+import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import ChatbotPublico from './pages/ChatbotPublico/ChatbotPublico';
 import PrivateRoute from './routes/PrivateRoute';
@@ -39,6 +41,10 @@ export default function App() {
 
       <Route path="/clientes/:id/perfil" element={
         <PrivateRoute><PerfilClientePage /></PrivateRoute>
+      } />
+
+      <Route path="/clientes/:id/pacotes" element={
+        <PrivateRoute><ClientePacotesPage /></PrivateRoute>
       } />
 
       <Route path="/clientes/:id/historico" element={
@@ -74,6 +80,9 @@ export default function App() {
       } />
       <Route path="/gestao/usuarios" element={
         <PrivateRoute><UsuariosList /></PrivateRoute>
+      } />
+      <Route path="/gestao/pacotes" element={
+        <PrivateRoute><PacotesList /></PrivateRoute>
       } />
       <Route path="/gestao/estoque" element={
         <PrivateRoute><EstoqueList /></PrivateRoute>
