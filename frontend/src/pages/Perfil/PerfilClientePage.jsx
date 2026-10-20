@@ -78,19 +78,19 @@ export default function PerfilClientePage() {
         <fieldset disabled={!podeEditar} className="border-0 p-0 m-0">
         <div className="card-body">
           <div className="row g-2">
-            <div className="col-md-6"><CampoTexto rotulo="Alergias" valor={form.alergias} onChange={set('alergias')} /></div>
-            <div className="col-md-6"><CampoTexto rotulo="Medicamentos em uso" valor={form.medicamentos} onChange={set('medicamentos')} /></div>
-            <div className="col-md-6"><CampoTexto rotulo="Condições de saúde" valor={form.condicoes_saude} onChange={set('condicoes_saude')} /></div>
-            <div className="col-md-6"><CampoTexto rotulo="Histórico de procedimentos" valor={form.historico_procedimentos} onChange={set('historico_procedimentos')} /></div>
+            <div className="col-md-6"><CampoTexto rotulo="Gosta de:" valor={form.alergias} onChange={set('alergias')} /></div>
+            <div className="col-md-6"><CampoTexto rotulo="Não gosta de:" valor={form.medicamentos} onChange={set('medicamentos')} /></div>
+            <div className="col-md-6"><CampoTexto rotulo="Trabalha em qual área:" valor={form.condicoes_saude} onChange={set('condicoes_saude')} /></div>
+            <div className="col-md-6"><CampoTexto rotulo="Detalhes nos procedimentos" valor={form.historico_procedimentos} onChange={set('historico_procedimentos')} /></div>
             <div className="col-md-6">
-              <label className="form-label small">Tipo de pele / cabelo</label>
+              <label className="form-label small">Hobbies, esportes, times do coração:</label>
               <input className="form-control" value={form.tipo_pele || ''} onChange={(e) => set('tipo_pele')(e.target.value)} />
             </div>
             <div className="col-md-6 d-flex align-items-end">
               <div className="form-check mb-2">
                 <input className="form-check-input" type="checkbox" id="gestante" checked={!!form.gestante}
                   onChange={(e) => set('gestante')(e.target.checked)} />
-                <label className="form-check-label small" htmlFor="gestante">Gestante</label>
+                <label className="form-check-label small" htmlFor="gestante">Gosta de socializar?</label>
               </div>
             </div>
             <div className="col-12"><CampoTexto rotulo="Observações gerais" valor={form.observacoes} onChange={set('observacoes')} /></div>
@@ -101,7 +101,7 @@ export default function PerfilClientePage() {
               <input className="form-check-input" type="checkbox" id="lgpd" checked={!!form.consentimento_lgpd}
                 onChange={(e) => set('consentimento_lgpd')(e.target.checked)} />
               <label className="form-check-label small" htmlFor="lgpd">
-                O cliente autorizou o registro dos seus dados de saúde (LGPD).
+                O cliente autorizou receber notícias em redes sociais.
               </label>
             </div>
             {form.consentimento_em && (
