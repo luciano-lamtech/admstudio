@@ -31,7 +31,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--apps',
             nargs='+',
-            default=['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio', 'estoque', 'prontuario', 'historico', 'pacotes'],
+            default=['accounts', 'clientes', 'profissionais', 'catalogo', 'agendamentos', 'financeiro', 'negocio', 'estoque', 'prontuario', 'historico', 'pacotes', 'fidelidade'],
             help='Apps de tenant a migrar (padrão: todos os módulos atuais).',
         )
 

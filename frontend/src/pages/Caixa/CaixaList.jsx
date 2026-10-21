@@ -7,6 +7,7 @@ const FORMAS_PAGAMENTO = [
   { valor: 'cartao_credito', label: 'Cartão de Crédito' },
   { valor: 'cartao_debito', label: 'Cartão de Débito' },
   { valor: 'saldo_devedor', label: 'Saldo Devedor' },
+  { valor: 'cashback', label: 'Cashback' },
 ];
 
 function ModalPix({ pendencia, onFechar }) {
@@ -106,6 +107,8 @@ export default function CaixaList() {
       });
       setMostrarModal(false);
       carregar();
+    } catch (err) {
+      window.alert(err.response?.data?.detail || 'Não foi possível concluir o recebimento.');
     } finally {
       setProcessando(false);
     }

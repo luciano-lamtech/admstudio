@@ -15,6 +15,7 @@ class Lancamento(models.Model):
         ('cartao_credito', 'Cartão de Crédito'),
         ('cartao_debito', 'Cartão de Débito'),
         ('saldo_devedor', 'Saldo Devedor'),
+        ('cashback', 'Cashback'),
     )
     STATUS_CHOICES = (
         ('pago', 'Pago'),

@@ -45,6 +45,9 @@ export default function HistoricoPage() {
           <div className="text-muted">{cliente?.nome}</div>
         </div>
         <div className="d-flex gap-2">
+          <button className="btn btn-outline-primary" onClick={() => navigate(`/clientes/${id}/cashback`)}>
+            <i className="bi bi-gift me-1"></i> Cashback
+          </button>
           <button className="btn btn-outline-primary" onClick={() => navigate(`/clientes/${id}/pacotes`)}>
             <i className="bi bi-ticket-perforated me-1"></i> Pacotes
           </button>

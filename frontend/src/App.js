@@ -20,6 +20,8 @@ import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
 import UsuariosList from './pages/Usuarios/UsuariosList';
 import EstoqueList from './pages/Estoque/EstoqueList';
 import PacotesList from './pages/Pacotes/PacotesList';
+import FidelidadePage from './pages/Fidelidade/FidelidadePage';
+import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import ChatbotPublico from './pages/ChatbotPublico/ChatbotPublico';
@@ -41,6 +43,10 @@ export default function App() {
 
       <Route path="/clientes/:id/perfil" element={
         <PrivateRoute><PerfilClientePage /></PrivateRoute>
+      } />
+
+      <Route path="/clientes/:id/cashback" element={
+        <PrivateRoute><ClienteCashbackPage /></PrivateRoute>
       } />
 
       <Route path="/clientes/:id/pacotes" element={
@@ -80,6 +86,9 @@ export default function App() {
       } />
       <Route path="/gestao/usuarios" element={
         <PrivateRoute><UsuariosList /></PrivateRoute>
+      } />
+      <Route path="/gestao/fidelidade" element={
+        <PrivateRoute><FidelidadePage /></PrivateRoute>
       } />
       <Route path="/gestao/pacotes" element={
         <PrivateRoute><PacotesList /></PrivateRoute>

@@ -24,6 +24,13 @@ const CARDS = [
     rota: '/gestao/profissionais',
   },
   {
+    titulo: 'Fidelidade / Cashback',
+    descricao: 'Percentual de cashback e validade dos créditos',
+    icone: 'bi-gift',
+    cor: '#db2777',
+    rota: '/gestao/fidelidade',
+  },
+  {
     titulo: 'Pacotes e Planos',
     descricao: 'Pacotes de sessões à venda e preços',
     icone: 'bi-ticket-perforated',

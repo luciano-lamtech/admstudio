@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'publico',
     'prontuario',
     'historico',       # log de alterações dos agendamentos (por tenant)
-    'pacotes',         # pacotes de sessões e planos (por tenant)     # prontuário do cliente (por tenant)         # API pública do chatbot de agendamento (sem login)
+    'pacotes',         # pacotes de sessões e planos (por tenant)
+    'fidelidade',      # programa de cashback (por tenant)     # prontuário do cliente (por tenant)         # API pública do chatbot de agendamento (sem login)
 ]
 
 MIDDLEWARE = [

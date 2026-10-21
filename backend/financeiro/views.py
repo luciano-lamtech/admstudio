@@ -51,8 +51,19 @@ class LancamentoViewSet(viewsets.ModelViewSet):
             marcar_devedor(lancamento)
         else:
             # Quitado: registra a forma e, se não houver mais saldo devedor, libera o cliente
+            from fidelidade.service import usar, creditar
+            if forma_pagamento == 'cashback':
+                cliente = lancamento.agendamento.cliente if lancamento.agendamento_id else None
+                if not cliente:
+                    return Response({'detail': 'Cashback só pode pagar atendimento de cliente.'}, status=400)
+                try:
+                    usar(cliente, lancamento.valor, lancamento)
+                except ValueError as exc:
+                    return Response({'detail': str(exc)}, status=400)
             lancamento.forma_pagamento = forma_pagamento
             lancamento.status = 'pago'
             lancamento.save(update_fields=['forma_pagamento', 'status'])
             liberar_se_quitado(lancamento)
+            if forma_pagamento != 'cashback':
+                creditar(lancamento)
         return Response(LancamentoSerializer(lancamento).data, status=status.HTTP_200_OK)
