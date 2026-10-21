@@ -30,6 +30,7 @@ class Lancamento(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pago')
     data = models.DateField()
     # Preenchido automaticamente quando a receita vem de um Agendamento concluído
+    unidade = models.ForeignKey('negocio.UnidadeNegocio', on_delete=models.SET_NULL, null=True, blank=True, related_name='lancamentos')
     agendamento = models.ForeignKey(
         Agendamento, on_delete=models.SET_NULL, null=True, blank=True, related_name='lancamentos',
     )

@@ -31,6 +31,9 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
         status_param = self.request.query_params.get('status')
         if status_param:
             qs = qs.filter(status=status_param)
+        unidade_id = self.request.query_params.get('unidade')
+        if unidade_id:
+            qs = qs.filter(unidade_id=unidade_id)
         cliente_id = self.request.query_params.get('cliente')
         if cliente_id:
             qs = qs.filter(cliente_id=cliente_id)

@@ -26,5 +26,5 @@ class LancamentoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'tipo', 'tipo_display', 'categoria', 'descricao', 'valor',
             'forma_pagamento', 'forma_pagamento_display', 'status', 'status_display',
-            'data', 'agendamento', 'cliente_nome', 'itens_agendamento', 'observacoes', 'created_at',
+            'data', 'agendamento', 'cliente_nome', 'itens_agendamento', 'unidade', 'observacoes', 'created_at',
         ]

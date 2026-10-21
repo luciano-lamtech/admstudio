@@ -27,6 +27,7 @@ class Agendamento(models.Model):
     lembrete_enviado_em = models.DateTimeField(null=True, blank=True)
     resposta_whatsapp = models.CharField(max_length=200, blank=True, help_text='Última resposta recebida do cliente')
     respondido_em = models.DateTimeField(null=True, blank=True)
+    unidade = models.ForeignKey('negocio.UnidadeNegocio', on_delete=models.SET_NULL, null=True, blank=True, related_name='agendamentos')
     valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -12,6 +12,7 @@ from .models import UnidadeNegocio
 from .serializers import UnidadeNegocioSerializer
 
 Nivel10 = criar_permissao(10)
+LeituraTodos = criar_permissao(1, 10)
 
 TIPOS_IMAGEM = {'image/png', 'image/jpeg', 'image/webp'}
 MAX_BYTES = 1024 * 1024
@@ -34,7 +35,7 @@ def _validar_imagem(data_url):
 
 class UnidadeNegocioViewSet(viewsets.ModelViewSet):
     """CRUD das unidades. QR Pix geral: POST/DELETE /api/negocio/<id>/qrcode-geral/"""
-    permission_classes = [Nivel10]
+    permission_classes = [LeituraTodos]
     serializer_class = UnidadeNegocioSerializer
     queryset = UnidadeNegocio.objects.all()
 

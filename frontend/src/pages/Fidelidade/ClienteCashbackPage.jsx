@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosClient from '../../api/axiosClient';
+import { useAuth } from '../../context/AuthContext';
 
 function formatarData(iso) {
   return iso ? new Date(iso + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
@@ -16,6 +17,19 @@ export default function ClienteCashbackPage() {
   const [cliente, setCliente] = useState(null);
   const [dados, setDados] = useState(null);
   const [erro, setErro] = useState('');
+  const { user } = useAuth();
+  const podeZerar = (user?.role?.nivel ?? 0) >= 7;
+
+  async function zerarSaldo() {
+    if (!window.confirm('Zerar o saldo de cashback deste cliente?')) return;
+    try {
+      await axiosClient.post(`/fidelidade/clientes/${id}/zerar/`);
+      const r = await axiosClient.get(`/fidelidade/clientes/${id}/`);
+      setDados(r.data);
+    } catch (err) {
+      setErro(err.response?.data?.detail || 'Não foi possível zerar.');
+    }
+  }
 
   useEffect(() => {
     axiosClient.get(`/clientes/${id}/`).then((r) => setCliente(r.data)).catch(() => setErro('Cliente não encontrado.'));
@@ -49,6 +63,12 @@ export default function ClienteCashbackPage() {
               <div className="fs-2 fw-bold">{reais(dados.saldo)}</div>
             </div>
           </div>
+
+          {podeZerar && parseFloat(dados.saldo) > 0 && (
+            <button className="btn btn-outline-danger mb-3" onClick={zerarSaldo}>
+              <i className="bi bi-x-circle me-1"></i> Zerar saldo
+            </button>
+          )}
 
           <div className="card border-0 shadow-sm">
             <div className="table-responsive">

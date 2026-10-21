@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { unidadeAtual } from '../../utils/unidade';
 
 const FORMAS_PAGAMENTO = [
   { valor: 'dinheiro', label: 'Dinheiro' },
@@ -83,7 +84,7 @@ export default function CaixaList() {
 
   async function carregar() {
     const res = await axiosClient.get('/financeiro/', {
-      params: { status: 'pendente', tipo: 'receita' },
+      params: { status: 'pendente', tipo: 'receita', unidade: unidadeAtual() || undefined },
     });
     setPendencias(res.data.results || res.data);
   }

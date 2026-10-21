@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { useAuth } from '../../context/AuthContext';
 
 export default function FidelidadePage() {
   const [form, setForm] = useState({ ativo: false, percentual: '0', validade_dias: 365 });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState('');
   const [aviso, setAviso] = useState('');
+  const { user } = useAuth();
+  const podeZerarTodos = (user?.role?.nivel ?? 0) >= 10;
+
+  async function zerarTodos() {
+    const confirmacao = window.prompt('Isto zera o cashback de TODOS os clientes. Digite ZERAR para confirmar:');
+    if (confirmacao !== 'ZERAR') return;
+    setErro('');
+    setAviso('');
+    try {
+      const r = await axiosClient.post('/fidelidade/zerar-todos/');
+      setAviso(`Cashback zerado para ${r.data.clientes_zerados} cliente(s).`);
+    } catch (err) {
+      setErro(err.response?.data?.detail || 'Não foi possível zerar.');
+    }
+  }
 
   useEffect(() => {
     axiosClient.get('/fidelidade/config/').then((r) => setForm(r.data));
@@ -33,6 +49,12 @@ export default function FidelidadePage() {
 
       {erro && <div className="alert alert-danger py-2 small">{erro}</div>}
       {aviso && <div className="alert alert-success py-2 small">{aviso}</div>}
+
+      {podeZerarTodos && (
+        <button className="btn btn-outline-danger mb-3" onClick={zerarTodos}>
+          <i className="bi bi-exclamation-triangle me-1"></i> Zerar cashback de todos os clientes
+        </button>
+      )}
 
       <form onSubmit={salvar} className="card border-0 shadow-sm" style={{ maxWidth: 560 }}>
         <div className="card-body">

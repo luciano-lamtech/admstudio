@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axiosClient from '../../api/axiosClient';
+import { unidadeAtual, setUnidadeAtual } from '../../utils/unidade';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,6 +11,13 @@ const hoje = new Date().toLocaleDateString('pt-BR', {
 export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [unidades, setUnidades] = useState([]);
+
+  useEffect(() => {
+    axiosClient.get('/negocio/')
+      .then((r) => setUnidades(r.data.results || r.data))
+      .catch(() => {});
+  }, []);
 
   function handleLogout() {
     logout();
@@ -17,7 +26,16 @@ export default function Header() {
 
   return (
     <header className="d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
-      <div className="text-muted small text-capitalize">{hoje}</div>
+      <div className="d-flex align-items-center gap-3">
+        <div className="text-muted small text-capitalize">{hoje}</div>
+        {unidades.length > 0 && (
+          <select className="form-select form-select-sm w-auto" value={unidadeAtual()}
+            onChange={(e) => { setUnidadeAtual(e.target.value); window.location.reload(); }}>
+            <option value="">Todas as unidades</option>
+            {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome_empresa}</option>)}
+          </select>
+        )}
+      </div>
       <div className="dropdown">
         <button
           className="btn btn-light d-flex align-items-center gap-2 dropdown-toggle"

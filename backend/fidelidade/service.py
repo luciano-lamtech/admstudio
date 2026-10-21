@@ -61,3 +61,26 @@ def usar(cliente, valor, lancamento):
         lancamento_id=lancamento.id,
         descricao=f'Uso no pagamento do atendimento de {lancamento.data:%d/%m/%Y}',
     )
+
+
+def zerar(cliente):
+    """Zera o saldo do cliente registrando um uso, sem apagar o extrato."""
+    restante = saldo(cliente)
+    if restante <= 0:
+        return Decimal('0')
+    MovimentoCashback.objects.create(
+        cliente=cliente,
+        tipo='uso',
+        valor=restante,
+        descricao='Saldo zerado manualmente',
+    )
+    return restante
+
+
+def zerar_todos():
+    from clientes.models import Cliente
+    zerados = 0
+    for cliente in Cliente.objects.all():
+        if zerar(cliente) > 0:
+            zerados += 1
+    return zerados

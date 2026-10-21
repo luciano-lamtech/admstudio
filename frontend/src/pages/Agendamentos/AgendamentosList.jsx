@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { unidadeAtual } from '../../utils/unidade';
 import { hojeISO } from '../../utils/datas';
 
 const STATUS_LABELS = {
@@ -48,7 +49,7 @@ export default function AgendamentosList() {
   const [visualizacao, setVisualizacao] = useState('agenda'); // 'agenda' | 'lista'
 
   async function carregarAgendamentos() {
-    const params = { data: dataFiltro || undefined };
+    const params = { data: dataFiltro || undefined, unidade: unidadeAtual() || undefined };
     if (statusFiltro !== 'todos') params.status = statusFiltro;
     const res = await axiosClient.get('/agendamentos/', { params });
     setAgendamentos(res.data.results || res.data);
@@ -124,6 +125,7 @@ export default function AgendamentosList() {
       const payload = {
         ...form,
         profissional: form.profissional || null,
+        unidade: unidadeAtual() || null,
         itens: form.itens
           .filter((i) => i.item_catalogo)
           .map((i) => ({

@@ -19,6 +19,9 @@ class LancamentoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = Lancamento.objects.select_related('agendamento', 'agendamento__cliente')
+        unidade_id = self.request.query_params.get('unidade')
+        if unidade_id:
+            qs = qs.filter(unidade_id=unidade_id)
         tipo = self.request.query_params.get('tipo')
         if tipo in ('receita', 'despesa'):
             qs = qs.filter(tipo=tipo)

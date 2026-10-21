@@ -31,7 +31,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agendamento
         fields = [
-            'id', 'cliente', 'cliente_nome', 'profissional', 'profissional_nome',
+            'id', 'cliente', 'cliente_nome', 'profissional', 'profissional_nome', 'unidade',
             'data_hora', 'status', 'status_display', 'observacoes', 'valor_total',
             'itens', 'created_at',
         ]
@@ -94,4 +94,5 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             status='pendente',
             data=agendamento.data_hora.date(),
             agendamento=agendamento,
+            unidade=agendamento.unidade,
         )

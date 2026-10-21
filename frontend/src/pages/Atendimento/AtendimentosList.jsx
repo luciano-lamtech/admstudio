@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { unidadeAtual } from '../../utils/unidade';
 
 const STATUS_LABELS = {
   agendado: { label: 'Agendado', cor: 'text-bg-secondary' },
@@ -31,7 +32,7 @@ export default function AtendimentosList() {
   const [erro, setErro] = useState('');
 
   async function carregar() {
-    const params = { data: dataFiltro || undefined };
+    const params = { data: dataFiltro || undefined, unidade: unidadeAtual() || undefined };
     if (statusFiltro !== 'todos') params.status = statusFiltro;
     try {
       const res = await axiosClient.get('/agendamentos/', { params });

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
+import { unidadeAtual } from '../../utils/unidade';
 import { hojeISO, primeiroDiaMesISO } from '../../utils/datas';
 
 const LANCAMENTO_VAZIO = {
@@ -27,7 +28,7 @@ export default function FinanceiroList() {
   const [salvando, setSalvando] = useState(false);
 
   async function carregar() {
-    const params = { data_inicio: dataInicio || undefined, data_fim: dataFim || undefined };
+    const params = { data_inicio: dataInicio || undefined, data_fim: dataFim || undefined, unidade: unidadeAtual() || undefined };
     if (tipoFiltro !== 'todos') params.tipo = tipoFiltro;
     const res = await axiosClient.get('/financeiro/', { params });
     setLancamentos(res.data.results || res.data);
@@ -58,7 +59,7 @@ export default function FinanceiroList() {
     e.preventDefault();
     setSalvando(true);
     try {
-      const payload = { ...form, valor: parseFloat(form.valor) || 0 };
+      const payload = { ...form, valor: parseFloat(form.valor) || 0, unidade: unidadeAtual() || null };
       if (editandoId) {
         await axiosClient.put(`/financeiro/${editandoId}/`, payload);
       } else {

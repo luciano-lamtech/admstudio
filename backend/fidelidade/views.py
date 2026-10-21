@@ -7,10 +7,12 @@ from rest_framework.views import APIView
 from accounts.permissions import criar_permissao
 from clientes.models import Cliente
 from .models import ConfiguracaoFidelidade, MovimentoCashback
-from .service import configuracao, saldo
+from .service import configuracao, saldo, zerar, zerar_todos
 
 PermissaoConfig = criar_permissao(1, 7)
 PermissaoLeitura = criar_permissao(1)
+PermissaoGerente = criar_permissao(7)
+PermissaoAdmin = criar_permissao(10)
 
 
 class ConfiguracaoFidelidadeView(APIView):
@@ -58,3 +60,21 @@ class ClienteCashbackView(APIView):
                 'data': m.created_at.date(),
             } for m in movimentos],
         })
+
+
+class ZerarClienteView(APIView):
+    """POST /api/fidelidade/clientes/<id>/zerar/ — zera o saldo de um cliente (Gerente ou superior)."""
+    permission_classes = [PermissaoGerente]
+
+    def post(self, request, cliente_id):
+        cliente = get_object_or_404(Cliente, pk=cliente_id)
+        valor = zerar(cliente)
+        return Response({'zerado': str(valor), 'saldo': str(saldo(cliente))})
+
+
+class ZerarTodosView(APIView):
+    """POST /api/fidelidade/zerar-todos/ — zera o saldo de todos os clientes (só Administrador)."""
+    permission_classes = [PermissaoAdmin]
+
+    def post(self, request):
+        return Response({'clientes_zerados': zerar_todos()})
