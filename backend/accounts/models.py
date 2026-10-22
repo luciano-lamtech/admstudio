@@ -72,3 +72,11 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class ConfiguracaoSeguranca(models.Model):
+    """Segredo usado para gerar a senha de operação do assinante."""
+    segredo = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        db_table = 'configuracao_seguranca'

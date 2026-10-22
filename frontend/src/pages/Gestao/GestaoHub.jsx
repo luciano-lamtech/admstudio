@@ -24,6 +24,13 @@ const CARDS = [
     rota: '/gestao/profissionais',
   },
   {
+    titulo: 'Senha de Operação',
+    descricao: 'Código de 6 dígitos que muda a cada minuto',
+    icone: 'bi-key',
+    cor: '#0f766e',
+    rota: '/gestao/senha-operacao',
+  },
+  {
     titulo: 'Fidelidade / Cashback',
     descricao: 'Percentual de cashback e validade dos créditos',
     icone: 'bi-gift',

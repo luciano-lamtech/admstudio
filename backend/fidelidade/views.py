@@ -64,9 +64,12 @@ class ClienteCashbackView(APIView):
 
 class ZerarClienteView(APIView):
     """POST /api/fidelidade/clientes/<id>/zerar/ — zera o saldo de um cliente (Gerente ou superior)."""
-    permission_classes = [PermissaoGerente]
+    permission_classes = [criar_permissao(3)]
 
     def post(self, request, cliente_id):
+        from accounts.senha_operacao import validar
+        if not validar(request.data.get('senha')):
+            return Response({'detail': 'Senha de operação inválida ou expirada.'}, status=403)
         cliente = get_object_or_404(Cliente, pk=cliente_id)
         valor = zerar(cliente)
         return Response({'zerado': str(valor), 'saldo': str(saldo(cliente))})

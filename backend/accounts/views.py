@@ -47,3 +47,12 @@ class MenuView(APIView):
         from .permissions import nivel_do_token
         itens = MenuItem.objects.filter(nivel_minimo__lte=nivel_do_token(request)).order_by('ordem')
         return Response(MenuItemSerializer(itens, many=True).data)
+
+
+class SenhaOperacaoView(APIView):
+    """GET /api/usuarios/senha-operacao/ — código atual (muda a cada minuto). Gerente ou superior."""
+    permission_classes = [Nivel7]
+
+    def get(self, request):
+        from .senha_operacao import senha_atual
+        return Response(senha_atual())

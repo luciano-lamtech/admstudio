@@ -18,12 +18,13 @@ export default function ClienteCashbackPage() {
   const [dados, setDados] = useState(null);
   const [erro, setErro] = useState('');
   const { user } = useAuth();
-  const podeZerar = (user?.role?.nivel ?? 0) >= 7;
+  const podeZerar = (user?.role?.nivel ?? 0) >= 3;
 
   async function zerarSaldo() {
-    if (!window.confirm('Zerar o saldo de cashback deste cliente?')) return;
+    const senha = window.prompt('Zerar o cashback deste cliente exige a senha de operação (6 dígitos):');
+    if (!senha) return;
     try {
-      await axiosClient.post(`/fidelidade/clientes/${id}/zerar/`);
+      await axiosClient.post(`/fidelidade/clientes/${id}/zerar/`, { senha: senha.trim() });
       const r = await axiosClient.get(`/fidelidade/clientes/${id}/`);
       setDados(r.data);
     } catch (err) {

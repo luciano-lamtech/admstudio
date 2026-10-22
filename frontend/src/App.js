@@ -21,6 +21,7 @@ import UsuariosList from './pages/Usuarios/UsuariosList';
 import EstoqueList from './pages/Estoque/EstoqueList';
 import PacotesList from './pages/Pacotes/PacotesList';
 import FidelidadePage from './pages/Fidelidade/FidelidadePage';
+import SenhaOperacaoPage from './pages/SenhaOperacao/SenhaOperacaoPage';
 import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
@@ -86,6 +87,9 @@ export default function App() {
       } />
       <Route path="/gestao/usuarios" element={
         <PrivateRoute><UsuariosList /></PrivateRoute>
+      } />
+      <Route path="/gestao/senha-operacao" element={
+        <PrivateRoute><SenhaOperacaoPage /></PrivateRoute>
       } />
       <Route path="/gestao/fidelidade" element={
         <PrivateRoute><FidelidadePage /></PrivateRoute>
