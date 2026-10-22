@@ -37,7 +37,7 @@ export default function Header() {
           <select className="form-select form-select-sm w-auto" value={unidadeAtual()}
             onChange={(e) => { setUnidadeAtual(e.target.value); window.location.reload(); }}>
             {unidades.length > 1 && <option value="">Todas as unidades</option>}
-            {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome_empresa}</option>)}
+            {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome_unidade || u.nome_empresa}</option>)}
           </select>
         )}
       </div>

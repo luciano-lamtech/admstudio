@@ -288,7 +288,7 @@ export default function UsuariosList() {
                               ? [...form.unidades, un.id]
                               : form.unidades.filter((x) => x !== un.id),
                           })} />
-                        <label className="form-check-label small" htmlFor={`un-${un.id}`}>{un.nome_empresa}</label>
+                        <label className="form-check-label small" htmlFor={`un-${un.id}`}>{un.nome_unidade || un.nome_empresa}</label>
                       </div>
                     ))}
                   </div>

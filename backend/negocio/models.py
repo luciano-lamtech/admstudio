@@ -14,6 +14,8 @@ class UnidadeNegocio(models.Model):
     )
 
     nome_empresa = models.CharField(max_length=150)
+    nome_unidade = models.CharField(max_length=100, blank=True,
+                                    help_text='Nome que aparece nos filtros do sistema (ex: Loja Centro).')
     cnpj_cpf = models.CharField(max_length=18, blank=True)
 
     nome_contato = models.CharField(max_length=150, blank=True)

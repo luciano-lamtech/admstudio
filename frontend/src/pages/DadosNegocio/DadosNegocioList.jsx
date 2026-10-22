@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
 
 const UNIDADE_VAZIA = {
-  nome_empresa: '', cnpj_cpf: '', nome_contato: '', telefone_contato: '',
+  nome_empresa: '', nome_unidade: '', cnpj_cpf: '', nome_contato: '', telefone_contato: '',
   email: '', telegram_id: '', cep: '', pais: 'Brasil', endereco: '', numero: '',
   bairro: '', cidade: '', estado: '', status: 'em_analise',
 };
@@ -224,7 +224,11 @@ export default function DadosNegocioList() {
                         onChange={(e) => setForm({ ...form, cnpj_cpf: e.target.value.replace(/\D/g, '').slice(0, 14) })} />
                     </div>
                   </div>
-
+                  <div className="mb-2">
+                    <label className="form-label small">Nome da unidade (aparece nos filtros)</label>
+                    <input className="form-control" placeholder="Ex: Loja Centro" value={form.nome_unidade || ''}
+                      onChange={(e) => setForm({ ...form, nome_unidade: e.target.value })} />
+                  </div>
                   <hr className="my-3" />
                   <div className="small fw-semibold text-muted mb-2">CONTATO</div>
                   <div className="row g-2 mb-2">
