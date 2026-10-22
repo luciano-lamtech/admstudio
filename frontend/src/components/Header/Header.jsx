@@ -15,7 +15,12 @@ export default function Header() {
 
   useEffect(() => {
     axiosClient.get('/negocio/')
-      .then((r) => setUnidades(r.data.results || r.data))
+      .then((r) => {
+        const lista = r.data.results || r.data;
+        setUnidades(lista);
+        // Usuário com uma única unidade liberada: seleciona automaticamente
+        if (lista.length === 1 && !unidadeAtual()) setUnidadeAtual(lista[0].id);
+      })
       .catch(() => {});
   }, []);
 
@@ -31,7 +36,7 @@ export default function Header() {
         {unidades.length > 0 && (
           <select className="form-select form-select-sm w-auto" value={unidadeAtual()}
             onChange={(e) => { setUnidadeAtual(e.target.value); window.location.reload(); }}>
-            <option value="">Todas as unidades</option>
+            {unidades.length > 1 && <option value="">Todas as unidades</option>}
             {unidades.map((u) => <option key={u.id} value={u.id}>{u.nome_empresa}</option>)}
           </select>
         )}

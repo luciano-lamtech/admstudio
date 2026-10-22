@@ -35,3 +35,40 @@ def criar_permissao(leitura, escrita=None, por_action=None):
             return nivel_do_token(request) >= exigido
 
     return NivelMinimo
+
+
+def unidades_permitidas(request):
+    """
+    None = sem restrição (todas as unidades).
+    Lista de ids = só essas unidades (quando o usuário tem unidades escolhidas).
+    """
+    from django.db.models import Q  # noqa: F401  (usado por filtrar_por_unidade)
+    from .models import User
+    try:
+        uid = request.auth.get('user_id') if request.auth else None
+    except Exception:
+        uid = None
+    if not uid:
+        return None
+    usuario = User.objects.filter(pk=uid).first()
+    if usuario is None:
+        return None
+    ids = list(usuario.unidades.values_list('id', flat=True))
+    return ids or None
+
+
+def filtrar_por_unidade(qs, request, campo='unidade'):
+    """Restringe o queryset às unidades do usuário. Registros sem unidade continuam visíveis."""
+    from django.db.models import Q
+    permitidas = unidades_permitidas(request)
+    if permitidas is None:
+        return qs
+    return qs.filter(Q(**{f'{campo}__in': permitidas}) | Q(**{f'{campo}__isnull': True}))
+
+
+def unidade_permitida(request, unidade):
+    """Confere se o usuário pode gravar um registro nesta unidade."""
+    permitidas = unidades_permitidas(request)
+    if permitidas is None:
+        return True
+    return unidade is not None and unidade.id in permitidas

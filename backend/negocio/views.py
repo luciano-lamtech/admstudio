@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.permissions import criar_permissao
+from accounts.permissions import criar_permissao, unidades_permitidas
 from .models import UnidadeNegocio
 from .serializers import UnidadeNegocioSerializer
 
@@ -38,6 +38,13 @@ class UnidadeNegocioViewSet(viewsets.ModelViewSet):
     permission_classes = [LeituraTodos]
     serializer_class = UnidadeNegocioSerializer
     queryset = UnidadeNegocio.objects.all()
+
+    def get_queryset(self):
+        qs = UnidadeNegocio.objects.all()
+        permitidas = unidades_permitidas(self.request)
+        if permitidas is not None:
+            qs = qs.filter(id__in=permitidas)
+        return qs
 
     @action(detail=True, methods=['post', 'delete'], url_path='qrcode-geral')
     def qrcode_geral(self, request, pk=None):

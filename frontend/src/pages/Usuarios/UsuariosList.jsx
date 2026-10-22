@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
 
-const USUARIO_VAZIO = { nome: '', email: '', senha: '', role: '', is_active: true };
+const USUARIO_VAZIO = { nome: '', email: '', senha: '', role: '', is_active: true, unidades: [] };
 const PERFIL_VAZIO = { nome: '', nivel: '' };
 
 export default function UsuariosList() {
   const [usuarios, setUsuarios] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [unidades, setUnidades] = useState([]);
   const [busca, setBusca] = useState('');
 
   // Modal de usuário
@@ -38,13 +39,18 @@ export default function UsuariosList() {
     setUsuarios(res.data.results || res.data);
   }
 
+  async function carregarUnidades() {
+    const res = await axiosClient.get('/negocio/');
+    setUnidades(res.data.results || res.data);
+  }
+
   async function carregarRoles() {
     const res = await axiosClient.get('/usuarios/roles/');
     setRoles(res.data.results || res.data);
   }
 
   useEffect(() => { carregarUsuarios(); }, [busca]); // eslint-disable-line
-  useEffect(() => { carregarRoles(); }, []);
+  useEffect(() => { carregarRoles(); carregarUnidades(); }, []);
 
   function abrirNovoUsuario() {
     setForm(USUARIO_VAZIO);
@@ -54,7 +60,7 @@ export default function UsuariosList() {
   }
 
   function editarUsuario(u) {
-    setForm({ nome: u.nome, email: u.email, senha: '', role: u.role || '', is_active: u.is_active });
+    setForm({ nome: u.nome, email: u.email, senha: '', role: u.role || '', is_active: u.is_active, unidades: u.unidades || [] });
     setEditandoId(u.id);
     setErro('');
     setMostrarForm(true);
@@ -267,6 +273,24 @@ export default function UsuariosList() {
                       <option value="">Selecione...</option>
                       {roles.map((r) => <option key={r.id} value={r.id}>{r.nome} (nível {r.nivel})</option>)}
                     </select>
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label small">Unidades que pode acessar</label>
+                    <div className="form-text mb-1">Nenhuma marcada = acesso a todas as unidades.</div>
+                    {unidades.length === 0 && <div className="small text-muted">Nenhuma unidade cadastrada.</div>}
+                    {unidades.map((un) => (
+                      <div className="form-check" key={un.id}>
+                        <input className="form-check-input" type="checkbox" id={`un-${un.id}`}
+                          checked={form.unidades.includes(un.id)}
+                          onChange={(e) => setForm({
+                            ...form,
+                            unidades: e.target.checked
+                              ? [...form.unidades, un.id]
+                              : form.unidades.filter((x) => x !== un.id),
+                          })} />
+                        <label className="form-check-label small" htmlFor={`un-${un.id}`}>{un.nome_empresa}</label>
+                      </div>
+                    ))}
                   </div>
                   <div className="form-check">
                     <input className="form-check-input" type="checkbox" id="ativoUsuario"

@@ -1,3 +1,4 @@
+from accounts.permissions import filtrar_por_unidade
 from accounts.permissions import criar_permissao
 Caixa = criar_permissao(2, 7, {'receber': 2})
 from rest_framework import viewsets, status
@@ -22,6 +23,7 @@ class LancamentoViewSet(viewsets.ModelViewSet):
         unidade_id = self.request.query_params.get('unidade')
         if unidade_id:
             qs = qs.filter(unidade_id=unidade_id)
+        qs = filtrar_por_unidade(qs, self.request)
         tipo = self.request.query_params.get('tipo')
         if tipo in ('receita', 'despesa'):
             qs = qs.filter(tipo=tipo)

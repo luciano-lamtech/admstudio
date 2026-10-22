@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from accounts.permissions import unidade_permitida
 from .models import Agendamento, AgendamentoItem
 from historico.service import (
     usuario_da_requisicao, snapshot, registrar_criacao, registrar_alteracoes,
@@ -36,6 +37,13 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             'itens', 'created_at',
         ]
         read_only_fields = ['valor_total']
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        if request is not None and (self.instance is None or 'unidade' in attrs):
+            if not unidade_permitida(request, attrs.get('unidade')):
+                raise serializers.ValidationError({'unidade': 'Você não tem acesso a esta unidade.'})
+        return attrs
 
     def create(self, validated_data):
         request = self.context.get('request')

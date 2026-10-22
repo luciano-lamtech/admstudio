@@ -1,3 +1,4 @@
+from accounts.permissions import filtrar_por_unidade
 from accounts.permissions import criar_permissao
 Nivel7 = criar_permissao(7)
 from decimal import Decimal
@@ -34,6 +35,7 @@ class AgendamentoViewSet(viewsets.ModelViewSet):
         unidade_id = self.request.query_params.get('unidade')
         if unidade_id:
             qs = qs.filter(unidade_id=unidade_id)
+        qs = filtrar_por_unidade(qs, self.request)
         cliente_id = self.request.query_params.get('cliente')
         if cliente_id:
             qs = qs.filter(cliente_id=cliente_id)
@@ -55,6 +57,7 @@ class RelatorioComissaoView(APIView):
         profissional_id = request.query_params.get('profissional')
 
         qs = Agendamento.objects.filter(status='concluido').exclude(profissional__isnull=True)
+        qs = filtrar_por_unidade(qs, request)
         if data_inicio:
             qs = qs.filter(data_hora__date__gte=data_inicio)
         if data_fim:

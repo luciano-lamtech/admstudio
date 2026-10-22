@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from accounts.permissions import unidade_permitida
 from .models import Lancamento
 
 
@@ -20,6 +21,13 @@ class LancamentoSerializer(serializers.ModelSerializer):
             'quantidade': i.quantidade,
             'tem_qrcode': bool(i.item_catalogo.qrcode_pix),
         } for i in obj.agendamento.itens.select_related('item_catalogo')]
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        if request is not None and (self.instance is None or 'unidade' in attrs):
+            if not unidade_permitida(request, attrs.get('unidade')):
+                raise serializers.ValidationError({'unidade': 'Você não tem acesso a esta unidade.'})
+        return attrs
 
     class Meta:
         model = Lancamento

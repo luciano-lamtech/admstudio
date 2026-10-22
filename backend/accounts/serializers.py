@@ -1,3 +1,4 @@
+from negocio.models import UnidadeNegocio
 from rest_framework import serializers
 from .models import User, Role, MenuItem
 
@@ -24,6 +25,9 @@ class UserManageSerializer(serializers.ModelSerializer):
     """
     senha = serializers.CharField(write_only=True, required=False, allow_blank=True)
     role_nome = serializers.CharField(source='role.nome', read_only=True, default=None)
+    unidades = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=UnidadeNegocio.objects.all(), required=False,
+    )
 
     def validate_role(self, role):
         from .permissions import nivel_do_token
@@ -34,22 +38,28 @@ class UserManageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'nome', 'role', 'role_nome', 'is_active', 'senha', 'created_at']
+        fields = ['id', 'email', 'nome', 'role', 'role_nome', 'is_active', 'senha', 'created_at', 'unidades']
 
     def create(self, validated_data):
         senha = validated_data.pop('senha', None)
+        unidades = validated_data.pop('unidades', None)
         user = User(**validated_data)
         user.set_password(senha or None)
         user.save()
+        if unidades is not None:
+            user.unidades.set(unidades)
         return user
 
     def update(self, instance, validated_data):
         senha = validated_data.pop('senha', None)
+        unidades = validated_data.pop('unidades', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         if senha:
             instance.set_password(senha)
         instance.save()
+        if unidades is not None:
+            instance.unidades.set(unidades)
         return instance
 
 
