@@ -19,7 +19,7 @@ def enviar_link_redefinicao(tenant, user):
     link = f'{settings.FRONTEND_URL}/redefinir-senha?cnpj={tenant.cnpj_cpf}&uid={uid}&token={token}'
     nome_estab = tenant.nome_fantasia or tenant.razao_social
     send_mail(
-        subject='ADMSTUDIO - Redefinição de senha',
+        subject='ADMSTUDIO - Alterar senha',
         message=(
             f'Olá, {user.nome}!\n\n'
             f'Recebemos um pedido para redefinir a senha da sua conta em {nome_estab}.\n'

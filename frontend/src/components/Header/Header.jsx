@@ -31,7 +31,15 @@ export default function Header() {
     navigate('/login');
   }
 
+  function mascararEmail(email) {
+    const [nome, dominio] = (email || '').split('@');
+    if (!dominio) return email || '';
+    return `${nome.slice(0, 2)}${'*'.repeat(Math.max(nome.length - 2, 1))}@${dominio}`;
+  }
+
   async function handleEsqueciSenha() {
+    const destino = mascararEmail(user?.email);
+    if (!window.confirm(`Enviar um link para ${destino} para alterar sua senha?`)) return;
     try {
       const r = await axiosClient.post('/auth/meu-link-senha/');
       window.alert(r.data.mensagem);
@@ -72,7 +80,7 @@ export default function Header() {
             <li><hr className="dropdown-divider" /></li>
             <li>
               <button className="dropdown-item" onClick={handleEsqueciSenha}>
-                <i className="bi bi-key me-2"></i>Esqueci a senha
+                <i className="bi bi-key me-2"></i>Alterar a senha
               </button>
             </li>
             <li>
