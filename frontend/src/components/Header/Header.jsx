@@ -31,6 +31,15 @@ export default function Header() {
     navigate('/login');
   }
 
+  async function handleEsqueciSenha() {
+    try {
+      const r = await axiosClient.post('/auth/meu-link-senha/');
+      window.alert(r.data.mensagem);
+    } catch (err) {
+      window.alert(err.response?.data?.detail || 'Não foi possível enviar o link.');
+    }
+  }
+
   return (
     <header className="d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-3">
       <div className="text-muted small text-capitalize">{hoje}</div>
@@ -61,6 +70,11 @@ export default function Header() {
           <ul className="dropdown-menu dropdown-menu-end">
             <li><span className="dropdown-item-text small text-muted">{user?.role?.nome}</span></li>
             <li><hr className="dropdown-divider" /></li>
+            <li>
+              <button className="dropdown-item" onClick={handleEsqueciSenha}>
+                <i className="bi bi-key me-2"></i>Esqueci a senha
+              </button>
+            </li>
             <li>
               <button className="dropdown-item text-danger" onClick={handleLogout}>
                 <i className="bi bi-box-arrow-right me-2"></i>Sair

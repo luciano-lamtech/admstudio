@@ -20,6 +20,19 @@ EFI_CLIENT_ID = config('EFI_CLIENT_ID', default='')
 EFI_CLIENT_SECRET = config('EFI_CLIENT_SECRET', default='')
 EFI_AMBIENTE = config('EFI_AMBIENTE', default='homologacao')
 
+# E-mail (recuperação de senha). Preencha com os dados do seu provedor SMTP.
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+DEFAULT_FROM_EMAIL = config('EMAIL_FROM', default='ADMSTUDIO <no-reply@admstudio.com.br>')
+# Endereço do sistema, usado no link enviado por e-mail
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000').rstrip('/')
+# Validade do link de redefinição de senha: 1 hora
+PASSWORD_RESET_TIMEOUT = 3600
+
 # Domínios com permissão para enviar formulários (proteção CSRF do Django).
 # Precisa ser a URL COMPLETA, com https://, sem caminho no final.
 # Ex: CSRF_TRUSTED_ORIGINS=https://plataformas-admstudio.sqkz99.easypanel.host,https://admstudio.seudominio.com

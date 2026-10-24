@@ -87,6 +87,10 @@ export default function Login() {
               {carregando ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
+
+          <div className="text-center mt-3 small">
+            <a href="/esqueci-senha">Esqueci minha senha</a>
+          </div>
         </div>
       </div>
     </div>

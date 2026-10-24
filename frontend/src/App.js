@@ -23,6 +23,8 @@ import PacotesList from './pages/Pacotes/PacotesList';
 import FidelidadePage from './pages/Fidelidade/FidelidadePage';
 import SenhaOperacaoPage from './pages/SenhaOperacao/SenhaOperacaoPage';
 import CadastroPage from './pages/Cadastro/CadastroPage';
+import EsqueciSenhaPage from './pages/Senha/EsqueciSenhaPage';
+import RedefinirSenhaPage from './pages/Senha/RedefinirSenhaPage';
 import AssinaturaPage from './pages/Assinatura/AssinaturaPage';
 import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
@@ -35,6 +37,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<CadastroPage />} />
+      <Route path="/esqueci-senha" element={<EsqueciSenhaPage />} />
+      <Route path="/redefinir-senha" element={<RedefinirSenhaPage />} />
 
       {/* Rota pública — não exige login, usada pelo chatbot de agendamento */}
       <Route path="/chat/:cnpj" element={<ChatbotPublico />} />
