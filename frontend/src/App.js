@@ -22,6 +22,7 @@ import EstoqueList from './pages/Estoque/EstoqueList';
 import PacotesList from './pages/Pacotes/PacotesList';
 import FidelidadePage from './pages/Fidelidade/FidelidadePage';
 import SenhaOperacaoPage from './pages/SenhaOperacao/SenhaOperacaoPage';
+import CadastroPage from './pages/Cadastro/CadastroPage';
 import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
@@ -32,6 +33,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<CadastroPage />} />
 
       {/* Rota pública — não exige login, usada pelo chatbot de agendamento */}
       <Route path="/chat/:cnpj" element={<ChatbotPublico />} />

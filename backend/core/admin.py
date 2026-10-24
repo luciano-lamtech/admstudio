@@ -95,7 +95,8 @@ class TenantAdmin(admin.ModelAdmin):
         return render(request, 'admin/core/tenant/provisionar.html', contexto)
     fieldsets = (
         ('Dados do assinante', {
-            'fields': ('cnpj_cpf', 'razao_social', 'nome_fantasia', 'tipo_negocio', 'plano', 'is_active'),
+            'fields': ('cnpj_cpf', 'razao_social', 'nome_fantasia', 'tipo_negocio', 'plano', 'is_active',
+                       'nome_responsavel', 'email_responsavel', 'telefone_responsavel', 'aceite_termos_em'),
         }),
         ('Banco de dados do assinante', {
             'fields': ('usa_servidor_central', 'db_name', 'db_host', 'db_port', 'db_user', 'db_password'),

@@ -65,6 +65,12 @@ class Tenant(models.Model):
     is_active = models.BooleanField(default=True)
     plano = models.CharField(max_length=50, default='basico')
 
+    # Responsável que fez o cadastro (self-service) e aceite dos termos
+    nome_responsavel = models.CharField(max_length=150, blank=True)
+    email_responsavel = models.EmailField(blank=True)
+    telefone_responsavel = models.CharField(max_length=20, blank=True)
+    aceite_termos_em = models.DateTimeField(null=True, blank=True)
+
     # Integração (n8n): token que autentica o n8n em nome deste assinante
     token_integracao = models.CharField(max_length=64, unique=True, blank=True, null=True)
     # Instância da Evolution que envia os WhatsApp deste assinante

@@ -146,6 +146,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'authentication.jwt.TenantJWTAuthentication',
     ),
+    'DEFAULT_THROTTLE_RATES': {'cadastro': '5/hour'},
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),

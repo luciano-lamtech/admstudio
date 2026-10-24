@@ -4,7 +4,10 @@ from .views import (
     HorariosDisponiveisView, AgendarPublicoView, ConsultarPublicoView, CancelarPublicoView,
 )
 
+from .cadastro import CadastroAssinanteView
+
 urlpatterns = [
+    path('cadastro/', CadastroAssinanteView.as_view()),
     path('<str:cnpj>/info/', InfoPublicoView.as_view()),
     path('<str:cnpj>/servicos/', ServicosPublicosView.as_view()),
     path('<str:cnpj>/profissionais/', ProfissionaisPublicosView.as_view()),
