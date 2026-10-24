@@ -4,7 +4,7 @@ from django.contrib import admin, messages
 from django.core.management import call_command
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse
-from .models import Tenant, RoadmapItem, InstanciaWhatsApp
+from .models import Tenant, RoadmapItem, InstanciaWhatsApp, Pagador
 
 admin.site.site_header = 'ADMSTUDIO - Administração'
 admin.site.site_title = 'ADMSTUDIO'
@@ -96,7 +96,7 @@ class TenantAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Dados do assinante', {
             'fields': ('cnpj_cpf', 'razao_social', 'nome_fantasia', 'tipo_negocio', 'plano', 'is_active',
-                       'nome_responsavel', 'email_responsavel', 'telefone_responsavel', 'aceite_termos_em'),
+                       'nome_responsavel', 'email_responsavel', 'telefone_responsavel', 'aceite_termos_em', 'pagador'),
         }),
         ('Banco de dados do assinante', {
             'fields': ('usa_servidor_central', 'db_name', 'db_host', 'db_port', 'db_user', 'db_password'),
@@ -115,3 +115,24 @@ class RoadmapItemAdmin(admin.ModelAdmin):
     list_filter = ('fase', 'concluido')
     search_fields = ('titulo', 'descricao')
     ordering = ('fase', 'ordem')
+
+
+@admin.register(Pagador)
+class PagadorAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'cpf_cnpj', 'status_cobranca', 'forma_pagamento', 'valor_atual', 'teste_ate')
+    list_filter = ('status_cobranca', 'forma_pagamento')
+    search_fields = ('nome', 'cpf_cnpj', 'email')
+    readonly_fields = ('valor_atual', 'efi_plano_id', 'efi_assinatura_id', 'status_cobranca')
+    actions = ['acao_gerar_boleto']
+
+    @admin.action(description='Gerar boleto (cancela o anterior e cobra o valor total atual)')
+    def acao_gerar_boleto(self, request, queryset):
+        from cobranca.servico import gerar_cobranca
+        from cobranca.efi import EfiError
+        for pagador in queryset:
+            try:
+                gerar_cobranca(pagador)
+                messages.success(request, f'{pagador.nome}: boleto gerado.')
+            except (EfiError, ValueError) as exc:
+                messages.error(request, f'{pagador.nome}: {exc}')
+

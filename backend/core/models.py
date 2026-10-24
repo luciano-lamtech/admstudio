@@ -32,6 +32,55 @@ class InstanciaWhatsApp(models.Model):
         return f'{self.nome} ({self.nome_instancia})'
 
 
+class Pagador(models.Model):
+    """
+    Quem paga a mensalidade. Um pagador pode ter vários CPFs/CNPJs (assinantes)
+    e recebe um único boleto com o valor total.
+    """
+    STATUS_CHOICES = (
+        ('teste', 'Período de teste'),
+        ('ativo', 'Em dia'),
+        ('devedor', 'Devedor'),
+        ('inativo', 'Inativo'),
+    )
+    FORMA_CHOICES = (('boleto', 'Boleto'), ('cartao', 'Cartão'))
+
+    nome = models.CharField(max_length=150)
+    cpf_cnpj = models.CharField(max_length=18, unique=True)
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20, blank=True)
+    rua = models.CharField(max_length=150, blank=True)
+    numero = models.CharField(max_length=10, blank=True)
+    complemento = models.CharField(max_length=60, blank=True)
+    bairro = models.CharField(max_length=100, blank=True)
+    cep = models.CharField(max_length=9, blank=True)
+    cidade = models.CharField(max_length=100, blank=True)
+    uf = models.CharField(max_length=2, blank=True)
+
+    forma_pagamento = models.CharField(max_length=10, choices=FORMA_CHOICES, default='boleto')
+    status_cobranca = models.CharField(max_length=10, choices=STATUS_CHOICES, default='teste')
+    teste_ate = models.DateField(null=True, blank=True)
+    valor_atual = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    efi_plano_id = models.CharField(max_length=30, blank=True)
+    efi_assinatura_id = models.CharField(max_length=30, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'pagadores'
+        verbose_name = 'Pagador'
+        verbose_name_plural = 'Pagadores'
+
+    def save(self, *args, **kwargs):
+        if self.pk is None and not self.teste_ate and self.status_cobranca == 'teste':
+            from datetime import timedelta
+            from django.utils import timezone
+            self.teste_ate = timezone.now().date() + timedelta(days=15)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.nome} ({self.cpf_cnpj})'
+
+
 class Tenant(models.Model):
     """
     Cadastro central de assinantes (clientes do SaaS ADMSTUDIO).
@@ -70,6 +119,9 @@ class Tenant(models.Model):
     email_responsavel = models.EmailField(blank=True)
     telefone_responsavel = models.CharField(max_length=20, blank=True)
     aceite_termos_em = models.DateTimeField(null=True, blank=True)
+
+    # Quem paga a mensalidade deste assinante
+    pagador = models.ForeignKey('core.Pagador', on_delete=models.SET_NULL, null=True, blank=True, related_name='tenants')
 
     # Integração (n8n): token que autentica o n8n em nome deste assinante
     token_integracao = models.CharField(max_length=64, unique=True, blank=True, null=True)

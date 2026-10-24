@@ -15,6 +15,11 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 # Caminho secreto do painel admin. Troque por uma variável no EasyPanel (ex: admin26714025328732440898)
 ADMIN_URL_PATH = config('ADMIN_URL_PATH', default='admin').strip('/')
 
+# Efí (cobranças). EFI_AMBIENTE: homologacao | producao
+EFI_CLIENT_ID = config('EFI_CLIENT_ID', default='')
+EFI_CLIENT_SECRET = config('EFI_CLIENT_SECRET', default='')
+EFI_AMBIENTE = config('EFI_AMBIENTE', default='homologacao')
+
 # Domínios com permissão para enviar formulários (proteção CSRF do Django).
 # Precisa ser a URL COMPLETA, com https://, sem caminho no final.
 # Ex: CSRF_TRUSTED_ORIGINS=https://plataformas-admstudio.sqkz99.easypanel.host,https://admstudio.seudominio.com
@@ -47,7 +52,8 @@ INSTALLED_APPS = [
     'prontuario',
     'historico',       # log de alterações dos agendamentos (por tenant)
     'pacotes',         # pacotes de sessões e planos (por tenant)
-    'fidelidade',      # programa de cashback (por tenant)     # prontuário do cliente (por tenant)         # API pública do chatbot de agendamento (sem login)
+    'fidelidade',      # programa de cashback (por tenant)
+    'cobranca',        # cobrança de assinantes via Efí (central)     # prontuário do cliente (por tenant)         # API pública do chatbot de agendamento (sem login)
 ]
 
 MIDDLEWARE = [
