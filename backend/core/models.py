@@ -74,7 +74,7 @@ class Pagador(models.Model):
         if self.pk is None and not self.teste_ate and self.status_cobranca == 'teste':
             from datetime import timedelta
             from django.utils import timezone
-            self.teste_ate = timezone.now().date() + timedelta(days=15)
+            self.teste_ate = timezone.now().date() + timedelta(days=30)
         super().save(*args, **kwargs)
 
     def __str__(self):

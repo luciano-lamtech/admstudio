@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from authentication.utils import register_tenant_connection
 from negocio.models import UnidadeNegocio
+from core.models import Pagador
 from . import efi
 
 PRECO_BASE = Decimal('49.90')       # por CPF/CNPJ
@@ -102,3 +103,47 @@ def gerar_cobranca(pagador):
     pagador.save(update_fields=['efi_plano_id', 'efi_assinatura_id', 'valor_atual',
                                 'forma_pagamento', 'status_cobranca'])
     return boleto
+
+
+def resumo_pagador(pagador):
+    """Dados para a tela 'Minha assinatura': contas do pagador e valor total."""
+    contas = []
+    total = Decimal('0')
+    for tenant in pagador.tenants.all():
+        alias = register_tenant_connection(tenant)
+        ativas = UnidadeNegocio.objects.using(alias).filter(status='ativo').count()
+        valor = PRECO_BASE + PRECO_UNIDADE * max(ativas - 1, 0)
+        total += valor
+        contas.append({
+            'nome': tenant.nome_fantasia or tenant.razao_social,
+            'cnpj_cpf': tenant.cnpj_cpf,
+            'unidades_ativas': ativas,
+            'valor': str(valor),
+        })
+    return {
+        'valor_total': str(total),
+        'contas': contas,
+        'forma_pagamento': pagador.forma_pagamento,
+        'status_cobranca': pagador.status_cobranca,
+        'teste_ate': pagador.teste_ate,
+        'valor_atual': str(pagador.valor_atual),
+    }
+
+
+def vincular_ao_pagador(tenant, cpf_responsavel):
+    """
+    Liga o assinante ao pagador pelo CPF do responsável.
+    Se o pagador já existe, o assinante herda a forma de pagamento dele
+    e o boleto é refeito com o novo valor total.
+    """
+    doc = _digitos(cpf_responsavel)
+    pagador, criado = Pagador.objects.get_or_create(
+        cpf_cnpj=doc,
+        defaults={'nome': tenant.nome_responsavel or tenant.razao_social,
+                  'email': tenant.email_responsavel or tenant.email_responsavel},
+    )
+    tenant.pagador = pagador
+    tenant.save(update_fields=['pagador'])
+    if not criado and pagador.efi_assinatura_id:
+        gerar_cobranca(pagador)
+    return pagador, criado

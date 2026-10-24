@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 const CARDS = [
   {
+    titulo: 'Minha Assinatura',
+    descricao: 'Plano, valor mensal e forma de pagamento',
+    icone: 'bi-credit-card-2-front',
+    cor: '#2563eb',
+    rota: '/configuracoes/assinatura',
+  },
+  {
     titulo: 'Dados do Negócio',
     descricao: 'Nome, endereço, contato e informações do assinante',
     icone: 'bi-building',

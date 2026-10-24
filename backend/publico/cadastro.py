@@ -58,6 +58,10 @@ class CadastroAssinanteView(APIView):
         elif senha != (d.get('confirmar_senha') or ''):
             erros['confirmar_senha'] = ['As senhas não conferem.']
 
+        cpf_resp = re.sub(r'\D', '', d.get('cpf_responsavel') or '')
+        if len(cpf_resp) != 11:
+            erros['cpf_responsavel'] = ['Informe o CPF do responsável (11 dígitos).']
+
         tipo = d.get('tipo_negocio') or 'salao'
         if tipo not in dict(Tenant.TIPO_CHOICES):
             erros['tipo_negocio'] = ['Tipo de negócio inválido.']
@@ -107,6 +111,12 @@ class CadastroAssinanteView(APIView):
             telefone_responsavel=(d.get('telefone') or '').strip()[:20],
             aceite_termos_em=timezone.now(),
         )
+        from cobranca.servico import vincular_ao_pagador
+        tenant = Tenant.objects.get(cnpj_cpf=cnpj)
+        try:
+            _, criado = vincular_ao_pagador(tenant, cpf_resp)
+        except Exception:
+            criado = True  # a cobrança não bloqueia o cadastro; o admin ajusta depois
         return Response({
             'cnpj_cpf': cnpj,
             'email': email,

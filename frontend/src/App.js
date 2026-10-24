@@ -23,6 +23,7 @@ import PacotesList from './pages/Pacotes/PacotesList';
 import FidelidadePage from './pages/Fidelidade/FidelidadePage';
 import SenhaOperacaoPage from './pages/SenhaOperacao/SenhaOperacaoPage';
 import CadastroPage from './pages/Cadastro/CadastroPage';
+import AssinaturaPage from './pages/Assinatura/AssinaturaPage';
 import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
 import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
@@ -117,6 +118,9 @@ export default function App() {
 
       <Route path="/configuracoes" element={
         <PrivateRoute><ConfiguracoesHub /></PrivateRoute>
+      } />
+      <Route path="/configuracoes/assinatura" element={
+        <PrivateRoute><AssinaturaPage /></PrivateRoute>
       } />
       <Route path="/configuracoes/negocio" element={
         <PrivateRoute><DadosNegocioList /></PrivateRoute>

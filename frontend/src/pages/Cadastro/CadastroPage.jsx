@@ -4,7 +4,7 @@ import axiosClient from '../../api/axiosClient';
 
 const VAZIO = {
   razao_social: '', nome_fantasia: '', cnpj_cpf: '', tipo_negocio: 'salao',
-  nome_responsavel: '', email: '', telefone: '', senha: '', confirmar_senha: '', aceite_termos: false,
+  nome_responsavel: '', cpf_responsavel: '', email: '', telefone: '', senha: '', confirmar_senha: '', aceite_termos: false,
 };
 
 const TIPOS = [
@@ -115,6 +115,14 @@ export default function CadastroPage() {
               <input className={`form-control ${campoErro('nome_responsavel') ? 'is-invalid' : ''}`} required
                 value={form.nome_responsavel} onChange={set('nome_responsavel')} />
               <div className="invalid-feedback">{campoErro('nome_responsavel')}</div>
+            </div>
+
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">CPF do responsável (quem paga a mensalidade)</label>
+              <input className={`form-control ${campoErro('cpf_responsavel') ? 'is-invalid' : ''}`} required
+                inputMode="numeric" placeholder="Somente números"
+                value={form.cpf_responsavel} onChange={(e) => setForm({ ...form, cpf_responsavel: e.target.value.replace(/\D/g, '').slice(0, 11) })} />
+              <div className="invalid-feedback">{campoErro('cpf_responsavel')}</div>
             </div>
 
             <div className="mb-2">
