@@ -32,6 +32,27 @@ class InstanciaWhatsApp(models.Model):
         return f'{self.nome} ({self.nome_instancia})'
 
 
+class ProdutoPreco(models.Model):
+    """
+    Tabela de preços da plataforma. Para mudar um valor, altere aqui no admin.
+    O código é usado pelo sistema: não altere.
+    """
+    codigo = models.SlugField(max_length=50, unique=True)
+    nome = models.CharField(max_length=100)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    ativo = models.BooleanField(default=True)
+    ordem = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        db_table = 'produtos_precos'
+        ordering = ['ordem', 'nome']
+        verbose_name = 'Produto e preço'
+        verbose_name_plural = 'Produtos e preços'
+
+    def __str__(self):
+        return f'{self.nome}: R$ {self.valor}'
+
+
 class Pagador(models.Model):
     """
     Quem paga a mensalidade. Um pagador pode ter vários CPFs/CNPJs (assinantes)

@@ -102,8 +102,8 @@ export default function AssinaturaPage() {
             </table>
           </div>
           <div className="small text-muted mt-3">
-            Cada estabelecimento paga R$ 49,90, mais R$ 19,90 por unidade ativa além da primeira.
-            Ao adicionar um novo CPF/CNPJ, o valor total é atualizado.
+            Cada estabelecimento paga {reais(dados.precos?.assinatura_base)}, que inclui uma unidade, mais {reais(dados.precos?.unidade_adicional)} por unidade adicional.
+            Ao criar ou ativar uma unidade, o valor total é atualizado.
           </div>
         </div>
       </div>

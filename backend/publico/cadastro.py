@@ -113,6 +113,17 @@ class CadastroAssinanteView(APIView):
         )
         from cobranca.servico import vincular_ao_pagador
         tenant = Tenant.objects.get(cnpj_cpf=cnpj)
+        import logging
+        from authentication.utils import register_tenant_connection
+        from negocio.models import UnidadeNegocio
+        try:
+            UnidadeNegocio.objects.using(register_tenant_connection(tenant)).create(
+                nome_empresa=razao, nome_unidade='Matriz', cnpj_cpf=cnpj,
+                nome_contato=responsavel, telefone_contato=(d.get('telefone') or '').strip()[:20],
+                email=email, status='ativo',
+            )
+        except Exception:
+            logging.getLogger(__name__).exception('Falha ao criar a unidade inicial do cadastro')
         try:
             _, criado = vincular_ao_pagador(tenant, cpf_resp)
         except Exception:

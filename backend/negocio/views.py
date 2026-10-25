@@ -39,6 +39,25 @@ class UnidadeNegocioViewSet(viewsets.ModelViewSet):
     serializer_class = UnidadeNegocioSerializer
     queryset = UnidadeNegocio.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save()
+        self._atualizar_cobranca()
+
+    def perform_update(self, serializer):
+        serializer.save()
+        self._atualizar_cobranca()
+
+    def _atualizar_cobranca(self):
+        import logging
+        from core.models import Tenant
+        from cobranca.servico import atualizar_cobranca
+        cnpj = self.request.auth.get('tenant_cnpj') if self.request.auth else None
+        tenant = Tenant.objects.filter(cnpj_cpf=cnpj).select_related('pagador').first()
+        try:
+            atualizar_cobranca(tenant)
+        except Exception:
+            logging.getLogger(__name__).exception('Falha ao atualizar a cobrança após alteração de unidade')
+
     def get_queryset(self):
         qs = UnidadeNegocio.objects.all()
         permitidas = unidades_permitidas(self.request)

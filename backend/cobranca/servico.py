@@ -14,9 +14,8 @@ from authentication.utils import register_tenant_connection
 from core.models import Pagador
 from negocio.models import UnidadeNegocio
 from . import efi
+from core.models import ProdutoPreco
 
-PRECO_BASE = Decimal('49.90')       # por CPF/CNPJ
-PRECO_UNIDADE = Decimal('19.90')    # por unidade ativa além da primeira
 DIAS_AVISO_ANTES_TESTE = 5          # e-mail avisando o fim do teste
 DIAS_PARA_DEVEDOR = 1               # 1 dia de atraso: devedor
 DIAS_PARA_INATIVO = 30              # 30 dias de atraso: inativo (login bloqueado)
@@ -30,13 +29,30 @@ def _digitos(texto):
     return re.sub(r'\D', '', texto or '')
 
 
+def precos():
+    """Valores vigentes, vindos da tabela ProdutoPreco (banco central)."""
+    tabela = dict(ProdutoPreco.objects.filter(ativo=True).values_list('codigo', 'valor'))
+    return {
+        'assinatura_base': Decimal(str(tabela.get('assinatura_base', '49.90'))),
+        'unidade_adicional': Decimal(str(tabela.get('unidade_adicional', '19.90'))),
+    }
+
+
+def calcular_tenant(tenant, p=None):
+    """Valor mensal de um estabelecimento: base (com 1 unidade) + unidades extras não inativas."""
+    p = p or precos()
+    alias = register_tenant_connection(tenant)
+    unidades = UnidadeNegocio.objects.using(alias).exclude(status='inativo').count()
+    extras = max(unidades - 1, 0)
+    return p['assinatura_base'] + p['unidade_adicional'] * extras, unidades
+
+
 def valor_pagador(pagador):
+    p = precos()
     total = Decimal('0')
     for tenant in pagador.tenants.all():
-        total += PRECO_BASE
-        alias = register_tenant_connection(tenant)
-        ativas = UnidadeNegocio.objects.using(alias).filter(status='ativo').count()
-        total += PRECO_UNIDADE * max(ativas - 1, 0)
+        valor, _ = calcular_tenant(tenant, p)
+        total += valor
     return total
 
 
@@ -205,29 +221,39 @@ def executar_ciclo():
 
 
 def resumo_pagador(pagador):
-    """Dados para a tela 'Minha assinatura': contas do pagador e valor total."""
+    """Dados para a tela 'Minha assinatura': contas do pagador, valor total e preços vigentes."""
+    p = precos()
     contas = []
     total = Decimal('0')
     for tenant in pagador.tenants.all():
-        alias = register_tenant_connection(tenant)
-        ativas = UnidadeNegocio.objects.using(alias).filter(status='ativo').count()
-        valor = PRECO_BASE + PRECO_UNIDADE * max(ativas - 1, 0)
+        valor, unidades = calcular_tenant(tenant, p)
         total += valor
         contas.append({
             'nome': tenant.nome_fantasia or tenant.razao_social,
             'cnpj_cpf': tenant.cnpj_cpf,
-            'unidades_ativas': ativas,
+            'unidades_ativas': unidades,
             'valor': str(valor),
         })
     return {
         'valor_total': str(total),
         'contas': contas,
+        'precos': {k: str(v) for k, v in p.items()},
         'forma_pagamento': pagador.forma_pagamento,
         'status_cobranca': pagador.status_cobranca,
         'teste_ate': pagador.teste_ate,
         'valor_atual': str(pagador.valor_atual),
         'data_vencimento': pagador.data_vencimento,
     }
+
+
+def atualizar_cobranca(tenant):
+    """Chamado quando uma unidade é criada, ativada ou inativada: refaz o boleto com o novo valor."""
+    if tenant is None or tenant.pagador_id is None:
+        return None
+    pagador = tenant.pagador
+    if not pagador.efi_assinatura_id:
+        return None  # ainda em teste: o valor será calculado quando o boleto for gerado
+    return gerar_cobranca(pagador)
 
 
 def vincular_ao_pagador(tenant, cpf_responsavel):

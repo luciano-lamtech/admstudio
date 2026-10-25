@@ -4,7 +4,7 @@ from django.contrib import admin, messages
 from django.core.management import call_command
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse
-from .models import Tenant, RoadmapItem, InstanciaWhatsApp, Pagador
+from .models import Tenant, RoadmapItem, InstanciaWhatsApp, Pagador, ProdutoPreco
 
 admin.site.site_header = 'ADMSTUDIO - Administração'
 admin.site.site_title = 'ADMSTUDIO'
@@ -135,4 +135,11 @@ class PagadorAdmin(admin.ModelAdmin):
                 messages.success(request, f'{pagador.nome}: boleto gerado.')
             except (EfiError, ValueError) as exc:
                 messages.error(request, f'{pagador.nome}: {exc}')
+
+
+@admin.register(ProdutoPreco)
+class ProdutoPrecoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'codigo', 'valor', 'ativo')
+    list_editable = ('valor', 'ativo')
+    readonly_fields = ('codigo',)
 
