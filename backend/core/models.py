@@ -60,6 +60,8 @@ class Pagador(models.Model):
     forma_pagamento = models.CharField(max_length=10, choices=FORMA_CHOICES, default='boleto')
     status_cobranca = models.CharField(max_length=10, choices=STATUS_CHOICES, default='teste')
     teste_ate = models.DateField(null=True, blank=True)
+    data_vencimento = models.DateField(null=True, blank=True)
+    aviso_teste_enviado = models.BooleanField(default=False)
     valor_atual = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     efi_plano_id = models.CharField(max_length=30, blank=True)
     efi_assinatura_id = models.CharField(max_length=30, blank=True)
