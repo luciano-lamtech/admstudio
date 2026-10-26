@@ -30,6 +30,7 @@ def register_tenant_connection(tenant):
             'PASSWORD': tenant.db_password,
             'HOST': _host(tenant),
             'PORT': _porta(tenant),
+            'OPTIONS': {'connect_timeout': 5},
             'OPTIONS': {'charset': 'utf8mb4'},
             'ATOMIC_REQUESTS': False,
             'AUTOCOMMIT': True,

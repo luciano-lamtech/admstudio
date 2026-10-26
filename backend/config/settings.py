@@ -28,7 +28,10 @@ EMAIL_HOST = config('EMAIL_HOST', default='')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+# Porta 465 = SSL direto; porta 587 = TLS (STARTTLS). Escolhido automaticamente pela porta.
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=(EMAIL_PORT == 465), cast=bool)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=(EMAIL_PORT == 587), cast=bool)
+EMAIL_TIMEOUT = 15
 DEFAULT_FROM_EMAIL = config('EMAIL_FROM', default='ADMSTUDIO <no-reply@admstudio.com.br>')
 # Endereço do sistema, usado no link enviado por e-mail
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000').rstrip('/')
