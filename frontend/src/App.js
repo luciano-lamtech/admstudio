@@ -23,6 +23,7 @@ import PacotesList from './pages/Pacotes/PacotesList';
 import FidelidadePage from './pages/Fidelidade/FidelidadePage';
 import SenhaOperacaoPage from './pages/SenhaOperacao/SenhaOperacaoPage';
 import CadastroPage from './pages/Cadastro/CadastroPage';
+import LegalPage from './pages/Legal/LegalPage';
 import EsqueciSenhaPage from './pages/Senha/EsqueciSenhaPage';
 import RedefinirSenhaPage from './pages/Senha/RedefinirSenhaPage';
 import AssinaturaPage from './pages/Assinatura/AssinaturaPage';
@@ -37,6 +38,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<CadastroPage />} />
+      <Route path="/termos" element={<LegalPage tipo="termos" />} />
+      <Route path="/privacidade" element={<LegalPage tipo="privacidade" />} />
       <Route path="/esqueci-senha" element={<EsqueciSenhaPage />} />
       <Route path="/redefinir-senha" element={<RedefinirSenhaPage />} />
 

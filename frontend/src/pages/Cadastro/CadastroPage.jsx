@@ -151,7 +151,7 @@ export default function CadastroPage() {
               <input className={`form-check-input ${campoErro('aceite_termos') ? 'is-invalid' : ''}`} type="checkbox"
                 id="aceite" checked={!!form.aceite_termos} onChange={set('aceite_termos')} />
               <label className="form-check-label small" htmlFor="aceite">
-                Li e aceito os termos de uso e a política de privacidade.
+                Li e aceito os <a href="/termos" target="_blank" rel="noreferrer">termos de uso</a> e a <a href="/privacidade" target="_blank" rel="noreferrer">política de privacidade</a>.
               </label>
               <div className="invalid-feedback d-block">{campoErro('aceite_termos')}</div>
             </div>
