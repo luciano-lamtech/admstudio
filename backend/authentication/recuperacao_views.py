@@ -1,3 +1,4 @@
+import logging
 import re
 
 from rest_framework import status
@@ -8,6 +9,8 @@ from rest_framework.views import APIView
 from authentication.utils import register_tenant_connection
 from core.models import Tenant
 from .recuperacao import enviar_link_redefinicao, usuario_pelo_link
+
+logger = logging.getLogger(__name__)
 
 MENSAGEM_NEUTRA = 'Se os dados estiverem corretos, enviamos um link de redefinição para o e-mail cadastrado.'
 
@@ -28,7 +31,7 @@ class EsqueciSenhaView(APIView):
                 if user:
                     enviar_link_redefinicao(tenant, user)
             except Exception:
-                pass
+                logger.exception('Falha ao enviar link de redefinição de senha')
         return Response({'mensagem': MENSAGEM_NEUTRA})
 
 
