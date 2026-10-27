@@ -1,5 +1,5 @@
-// Textos dos documentos legais.
-// Preencha os campos entre colchetes antes de publicar e revise com um advogado.
+// Textos dos documentos legais, preenchidos.
+// Revise com um advogado antes de publicar.
 
 export const ULTIMA_ATUALIZACAO = '26 de outubro de 2026';
 
@@ -7,7 +7,7 @@ export const TERMOS = [
   {
     titulo: '1. Quem somos e o que é este documento',
     paragrafos: [
-      'Estes Termos de Uso regulam o acesso e a utilização da plataforma ADMSTUDIO, sistema de gestão para salões de beleza, barbearias, clínicas de estética e negócios similares, operado por [RAZÃO SOCIAL], inscrita no CNPJ [CNPJ].',
+      'Estes Termos de Uso regulam o acesso e a utilização da plataforma ADMSTUDIO, sistema de gestão para salões de beleza, barbearias, clínicas de estética e negócios similares, operado pela Lamtech, com sede em São Paulo/SP, Brasil.',
       'Ao criar uma conta ou utilizar a plataforma, você declara ter lido, compreendido e aceito estes Termos e a Política de Privacidade.',
     ],
   },
@@ -76,7 +76,7 @@ export const TERMOS = [
   {
     titulo: '9. Propriedade intelectual',
     paragrafos: [
-      'A Plataforma, sua marca, código, layout e documentação pertencem à [RAZÃO SOCIAL]. Os dados inseridos pelo Assinante continuam sendo dele. O Assinante recebe apenas o direito de uso durante a vigência da assinatura.',
+      'A Plataforma, sua marca, código, layout e documentação pertencem à Lamtech. Os dados inseridos pelo Assinante continuam sendo dele. O Assinante recebe apenas o direito de uso durante a vigência da assinatura.',
     ],
   },
   {
@@ -116,12 +116,12 @@ export const TERMOS = [
   {
     titulo: '15. Lei aplicável e foro',
     paragrafos: [
-      'Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da comarca de [CIDADE/UF], sem prejuízo do direito do consumidor de escolher o foro de seu domicílio, quando aplicável.',
+      'Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da comarca de Ribeirão Preto/SP, sem prejuízo do direito do consumidor de escolher o foro de seu domicílio, quando aplicável.',
     ],
   },
   {
     titulo: '16. Contato',
-    paragrafos: ['[E-MAIL DE CONTATO] · [ENDEREÇO COMPLETO]'],
+    paragrafos: ['tecnologia@lamtech.com.br · Empresa Digital, São Paulo/SP, Brasil'],
   },
 ];
 
@@ -129,7 +129,7 @@ export const PRIVACIDADE = [
   {
     titulo: '1. Introdução',
     paragrafos: [
-      'Esta Política explica como a [RAZÃO SOCIAL] coleta, usa, compartilha, protege e elimina dados pessoais na plataforma ADMSTUDIO, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018, LGPD).',
+      'Esta Política explica como a Lamtech coleta, usa, compartilha, protege e elimina dados pessoais na plataforma ADMSTUDIO, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018, LGPD).',
     ],
   },
   {
@@ -243,8 +243,8 @@ export const PRIVACIDADE = [
   {
     titulo: '14. Encarregado de dados e contato',
     paragrafos: [
-      'Encarregado pelo tratamento de dados pessoais (DPO): [E-MAIL DO ENCARREGADO]',
-      'Contato geral: [E-MAIL DE CONTATO] · [ENDEREÇO COMPLETO]',
+      'Encarregado pelo tratamento de dados pessoais (DPO): tecnologia@lamtech.com.br',
+      'Contato geral: tecnologia@lamtech.com.br · Empresa Digital, São Paulo/SP, Brasil',
     ],
   },
   {
