@@ -11,11 +11,12 @@ const hoje = new Date().toLocaleDateString('pt-BR', {
 });
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user, logout, assinatura } = useAuth();
   const navigate = useNavigate();
   const [unidades, setUnidades] = useState([]);
 
   useEffect(() => {
+    if (assinatura?.bloqueado) return; // acesso restrito: o servidor só responde a tela de assinatura
     axiosClient.get('/negocio/')
       .then((r) => {
         const lista = r.data.results || r.data;
@@ -24,7 +25,7 @@ export default function Header() {
         if (lista.length === 1 && !unidadeAtual()) setUnidadeAtual(lista[0].id);
       })
       .catch(() => {});
-  }, []);
+  }, [assinatura?.bloqueado]);
 
   function handleLogout() {
     logout();

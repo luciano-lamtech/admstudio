@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **opts):
         hoje = timezone.now().astimezone(ZoneInfo('America/Sao_Paulo')).date()
-        pendentes = Pagador.objects.filter(status_cobranca='teste', teste_ate__lte=hoje, forma_pagamento='boleto')
+        pendentes = Pagador.objects.filter(status_cobranca='teste', teste_ate__lt=hoje, forma_pagamento='boleto')
         for pagador in pendentes:
             try:
                 gerar_cobranca(pagador)

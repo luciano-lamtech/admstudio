@@ -3,7 +3,12 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
-  const { menu, tenant } = useAuth();
+  const { menu: menuCompleto, tenant, assinatura } = useAuth();
+
+  // Acesso restrito: o menu mostra só a assinatura.
+  const menu = assinatura?.bloqueado
+    ? [{ id: 'assinatura', rota: '/configuracoes/assinatura', icone: 'bi-credit-card', label: 'Minha assinatura' }]
+    : menuCompleto;
 
   return (
     <aside className="d-flex flex-column bg-dark text-white p-3" style={{ width: '250px', minHeight: '100vh' }}>

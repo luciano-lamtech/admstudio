@@ -119,10 +119,10 @@ class RoadmapItemAdmin(admin.ModelAdmin):
 
 @admin.register(Pagador)
 class PagadorAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'cpf_cnpj', 'status_cobranca', 'forma_pagamento', 'valor_atual', 'teste_ate')
+    list_display = ('nome', 'cpf_cnpj', 'status_cobranca', 'forma_pagamento', 'valor_atual', 'teste_ate', 'data_vencimento')
     list_filter = ('status_cobranca', 'forma_pagamento')
     search_fields = ('nome', 'cpf_cnpj', 'email')
-    readonly_fields = ('valor_atual', 'efi_plano_id', 'efi_assinatura_id', 'status_cobranca')
+    readonly_fields = ('valor_atual', 'efi_plano_id', 'efi_assinatura_id', 'status_cobranca', 'link_boleto', 'linha_digitavel')
     actions = ['acao_gerar_boleto']
 
     @admin.action(description='Gerar boleto (cancela o anterior e cobra o valor total atual)')

@@ -39,8 +39,8 @@ class LoginView(APIView):
         except Tenant.DoesNotExist:
             return Response({'detail': 'Assinante não encontrado ou inativo. Verifique o CPF/CNPJ informado.'}, status=404)
 
-        if tenant.pagador_id and tenant.pagador.status_cobranca == 'inativo':
-            return Response({'detail': 'Assinatura inativa por falta de pagamento. Regularize o boleto para voltar a acessar.'}, status=403)
+        # Teste vencido ou assinatura inativa NÃO impede o login: o usuário entra, mas só vê
+        # a tela "Minha assinatura" (a trava das demais rotas está em authentication/jwt.py).
 
         alias = register_tenant_connection(tenant)
         set_current_tenant_alias(alias)  # necessário para o db_router durante esta request
@@ -74,5 +74,6 @@ class LoginView(APIView):
                 'nome': tenant.nome_fantasia or tenant.razao_social,
                 'tipo_negocio': tenant.tipo_negocio,
             },
+            'assinatura': tenant.situacao_assinatura(),
             'menu': MenuItemSerializer(menu, many=True).data,
         })

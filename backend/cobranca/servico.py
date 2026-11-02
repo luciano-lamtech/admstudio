@@ -25,6 +25,14 @@ def _hoje():
     return timezone.localdate()
 
 
+def _mais_um_mes(data):
+    """Soma um mês à data (dia 31 vira o último dia do mês seguinte, se preciso)."""
+    import calendar
+    mes = data.month % 12 + 1
+    ano = data.year + (1 if data.month == 12 else 0)
+    return data.replace(year=ano, month=mes, day=min(data.day, calendar.monthrange(ano, mes)[1]))
+
+
 def _digitos(texto):
     return re.sub(r'\D', '', texto or '')
 
@@ -109,6 +117,7 @@ def gerar_cobranca(pagador):
         'items': [{'name': 'ADMSTUDIO - Mensalidade', 'value': int(total * 100), 'amount': 1}],
     })
     assinatura_id = str(assinatura['subscription_id'])
+    _registrar_notificacao(assinatura_id, pagador)
 
     vencimento = _hoje() + timedelta(days=10)
     boleto = efi.chamar('POST', f'/v1/subscription/{assinatura_id}/pay', {
@@ -121,14 +130,58 @@ def gerar_cobranca(pagador):
         },
     })
 
+    # Quem está com o acesso restrito (teste vencido ou inativo) continua restrito
+    # até o pagamento ser confirmado; só o "pago" libera (ver sincronizar_pagador).
+    situacao_anterior = pagador.status_efetivo()
+    link, linha = _dados_boleto(boleto)
+
     pagador.efi_assinatura_id = assinatura_id
     pagador.valor_atual = total
     pagador.forma_pagamento = 'boleto'
-    pagador.status_cobranca = 'ativo'
+    pagador.status_cobranca = situacao_anterior if situacao_anterior in ('vencido', 'inativo') else 'ativo'
     pagador.data_vencimento = vencimento
+    pagador.link_boleto = link
+    pagador.linha_digitavel = linha
     pagador.save(update_fields=['efi_plano_id', 'efi_assinatura_id', 'valor_atual',
-                                'forma_pagamento', 'status_cobranca', 'data_vencimento'])
+                                'forma_pagamento', 'status_cobranca', 'data_vencimento',
+                                'link_boleto', 'linha_digitavel'])
     return boleto
+
+
+def _dados_boleto(boleto):
+    """Link (PDF) e código de barras do boleto, na resposta de /subscription/{id}/pay."""
+    boleto = boleto or {}
+    pdf = boleto.get('pdf') or {}
+    link = pdf.get('charge') or boleto.get('link') or boleto.get('billet_link') or ''
+    return link, boleto.get('barcode') or ''
+
+
+def _registrar_notificacao(assinatura_id, pagador):
+    """Pede à Efí para avisar o nosso webhook quando o boleto for pago."""
+    if not settings.EFI_WEBHOOK_URL:
+        return
+    try:
+        efi.chamar('PUT', f'/v1/subscription/{assinatura_id}/metadata', {
+            'custom_id': f'pagador-{pagador.pk}',
+            'notification_url': settings.EFI_WEBHOOK_URL,
+        })
+    except efi.EfiError:
+        pass  # sem webhook, o ciclo diário e o botão "verificar pagamento" ainda confirmam
+
+
+def boleto_vigente(pagador):
+    """True se já existe um boleto em aberto, dentro do vencimento, que pode ser reaproveitado."""
+    return bool(
+        pagador.efi_assinatura_id and pagador.link_boleto
+        and pagador.data_vencimento and pagador.data_vencimento >= _hoje()
+    )
+
+
+def garantir_boleto(pagador):
+    """Usado pela tela "Minha assinatura": reaproveita o boleto em aberto ou gera um novo."""
+    if not boleto_vigente(pagador):
+        gerar_cobranca(pagador)
+    return pagador
 
 
 def _enviar_email(pagador, assunto, texto):
@@ -164,18 +217,34 @@ def _avisar_mudanca(pagador, novo):
 
 
 def sincronizar_pagador(pagador):
-    """Consulta a Efí e atualiza o status: ativo, devedor (1 dia) ou inativo (30 dias)."""
+    """
+    Consulta a Efí e atualiza o status: ativo, devedor (1 dia) ou inativo (30 dias).
+    Pagamento confirmado libera o acesso e garante mais um mês de uso.
+    """
     dados = efi.chamar('GET', f'/v1/subscription/{pagador.efi_assinatura_id}')
     historico = sorted(dados.get('history') or [], key=lambda h: str(h.get('created_at', '')))
     ultima = historico[-1] if historico else {}
+    anterior = pagador.status_cobranca
+    hoje = _hoje()
 
     if ultima.get('status') == 'paid':
         novo = 'ativo'
         proximo = dados.get('next_expire_at')
         if proximo:
             pagador.data_vencimento = date.fromisoformat(proximo[:10])
+        elif anterior != 'ativo' or not pagador.data_vencimento:
+            # A Efí não informou a próxima cobrança: garante um mês de uso.
+            # Quem estava restrito (teste vencido / inativo) ganha um mês a contar de hoje;
+            # nos demais casos, a contar do vencimento do boleto pago (se ainda não passou).
+            if anterior in ('teste', 'vencido', 'inativo') or not pagador.data_vencimento:
+                base = hoje
+            else:
+                base = max(hoje, pagador.data_vencimento)
+            pagador.data_vencimento = _mais_um_mes(base)
+    elif pagador.status_efetivo() in ('vencido', 'inativo'):
+        novo = pagador.status_efetivo()  # continua restrito até o pagamento ser confirmado
     else:
-        atraso = (_hoje() - pagador.data_vencimento).days if pagador.data_vencimento else 0
+        atraso = (hoje - pagador.data_vencimento).days if pagador.data_vencimento else 0
         if atraso >= DIAS_PARA_INATIVO:
             novo = 'inativo'
         elif atraso >= DIAS_PARA_DEVEDOR:
@@ -183,7 +252,6 @@ def sincronizar_pagador(pagador):
         else:
             novo = 'ativo'
 
-    anterior = pagador.status_cobranca
     pagador.status_cobranca = novo
     pagador.save(update_fields=['status_cobranca', 'data_vencimento'])
     if novo != anterior:
@@ -201,15 +269,19 @@ def executar_ciclo():
     resultado = []
     for pagador in Pagador.objects.all():
         try:
-            if pagador.status_cobranca == 'teste':
+            situacao = pagador.status_efetivo()
+            if situacao == 'teste':
                 if (pagador.teste_ate and not pagador.aviso_teste_enviado
                         and pagador.teste_ate - timedelta(days=DIAS_AVISO_ANTES_TESTE) <= hoje):
                     avisar_fim_teste(pagador)
-                if pagador.teste_ate and pagador.teste_ate <= hoje and pagador.forma_pagamento == 'boleto':
+                resultado.append((pagador.nome, 'em teste'))
+            elif situacao == 'vencido' and not pagador.efi_assinatura_id:
+                # teste acabou: gera o boleto (a pessoa fica restrita à tela de assinatura até pagar)
+                if pagador.forma_pagamento == 'boleto':
                     gerar_cobranca(pagador)
                     resultado.append((pagador.nome, 'boleto gerado'))
-                    continue
-                resultado.append((pagador.nome, 'em teste'))
+                else:
+                    resultado.append((pagador.nome, 'teste vencido'))
             elif pagador.efi_assinatura_id:
                 novo = sincronizar_pagador(pagador)
                 resultado.append((pagador.nome, novo))
@@ -239,10 +311,14 @@ def resumo_pagador(pagador):
         'contas': contas,
         'precos': {k: str(v) for k, v in p.items()},
         'forma_pagamento': pagador.forma_pagamento,
-        'status_cobranca': pagador.status_cobranca,
+        'status_cobranca': pagador.status_efetivo(),
+        'bloqueado': pagador.bloqueado,
         'teste_ate': pagador.teste_ate,
         'valor_atual': str(pagador.valor_atual),
         'data_vencimento': pagador.data_vencimento,
+        'link_boleto': pagador.link_boleto if boleto_vigente(pagador) else '',
+        'linha_digitavel': pagador.linha_digitavel if boleto_vigente(pagador) else '',
+        'tem_boleto': boleto_vigente(pagador),
     }
 
 

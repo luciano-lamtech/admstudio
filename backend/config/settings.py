@@ -19,6 +19,8 @@ ADMIN_URL_PATH = config('ADMIN_URL_PATH', default='admin').strip('/')
 EFI_CLIENT_ID = config('EFI_CLIENT_ID', default='')
 EFI_CLIENT_SECRET = config('EFI_CLIENT_SECRET', default='')
 EFI_AMBIENTE = config('EFI_AMBIENTE', default='homologacao')
+# URL pública (https) que a Efí avisa quando um boleto é pago. Ex: https://SEU-DOMINIO/api/cobranca/webhook-efi/
+EFI_WEBHOOK_URL = config('EFI_WEBHOOK_URL', default='')
 # Segredo que autoriza o n8n a disparar o ciclo diário de cobrança (X-Ciclo-Token)
 CICLO_SECRET = config('CICLO_SECRET', default='')
 

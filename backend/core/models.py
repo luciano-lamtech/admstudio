@@ -60,6 +60,7 @@ class Pagador(models.Model):
     """
     STATUS_CHOICES = (
         ('teste', 'Período de teste'),
+        ('vencido', 'Período de teste - vencido'),
         ('ativo', 'Em dia'),
         ('devedor', 'Devedor'),
         ('inativo', 'Inativo'),
@@ -86,6 +87,9 @@ class Pagador(models.Model):
     valor_atual = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     efi_plano_id = models.CharField(max_length=30, blank=True)
     efi_assinatura_id = models.CharField(max_length=30, blank=True)
+    # Último boleto gerado na Efí (para a tela "Minha assinatura" mostrar o link de pagamento)
+    link_boleto = models.CharField(max_length=500, blank=True)
+    linha_digitavel = models.CharField(max_length=120, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -99,6 +103,21 @@ class Pagador(models.Model):
             from django.utils import timezone
             self.teste_ate = timezone.now().date() + timedelta(days=30)
         super().save(*args, **kwargs)
+
+    def status_efetivo(self):
+        """
+        Situação real hoje. Um pagador em 'teste' cujo teste_ate já passou é
+        tratado como 'vencido' na hora, sem depender do ciclo diário rodar.
+        """
+        from django.utils import timezone
+        if self.status_cobranca == 'teste' and self.teste_ate and self.teste_ate < timezone.localdate():
+            return 'vencido'
+        return self.status_cobranca
+
+    @property
+    def bloqueado(self):
+        """Teste vencido sem pagamento, ou inativo por falta de pagamento: só a tela de assinatura fica liberada."""
+        return self.status_efetivo() in ('vencido', 'inativo')
 
     def __str__(self):
         return f'{self.nome} ({self.cpf_cnpj})'
@@ -179,6 +198,12 @@ class Tenant(models.Model):
     def alias(self):
         """Alias único usado para registrar a conexão dinâmica desse tenant."""
         return f"tenant_{self.cnpj_cpf}"
+
+    def situacao_assinatura(self):
+        """Resumo para o login/front: se o acesso está restrito à tela de assinatura."""
+        if not self.pagador_id:
+            return {'bloqueado': False, 'status': None}
+        return {'bloqueado': self.pagador.bloqueado, 'status': self.pagador.status_efetivo()}
 
 
 class RoadmapItem(models.Model):

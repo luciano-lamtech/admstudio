@@ -34,6 +34,17 @@ axiosClient.interceptors.response.use(
       console.error(`[ADMSTUDIO] Falha de rede/CORS ao chamar ${error.config?.url}:`, error.message);
     }
 
+    // Teste vencido / assinatura inativa: o servidor recusa tudo, menos a tela de assinatura.
+    if (error.response && error.response.status === 403
+        && error.response.data?.codigo === 'assinatura_bloqueada') {
+      localStorage.setItem('admstudio_assinatura', JSON.stringify({
+        bloqueado: true, status: error.response.data.status || null,
+      }));
+      if (window.location.pathname !== '/configuracoes/assinatura') {
+        window.location.href = '/configuracoes/assinatura';
+      }
+    }
+
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('admstudio_access');
       localStorage.removeItem('admstudio_refresh');
