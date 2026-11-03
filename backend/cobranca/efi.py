@@ -26,6 +26,8 @@ def _base():
 def _token_acesso():
     if _token['valor'] and time.time() < _token['expira_em'] - 30:
         return _token['valor']
+    if not settings.EFI_CLIENT_ID or not settings.EFI_CLIENT_SECRET:
+        raise EfiError('EFI_CLIENT_ID e EFI_CLIENT_SECRET não estão configurados no servidor.')
     credencial = base64.b64encode(
         f'{settings.EFI_CLIENT_ID}:{settings.EFI_CLIENT_SECRET}'.encode()
     ).decode()
@@ -39,8 +41,13 @@ def _token_acesso():
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
             dados = json.loads(resp.read())
-    except urllib.error.HTTPError:
-        raise EfiError('Falha ao autenticar na Efí. Confira EFI_CLIENT_ID, EFI_CLIENT_SECRET e EFI_AMBIENTE.')
+    except urllib.error.HTTPError as exc:
+        raise EfiError(
+            f'Falha ao autenticar na Efí (HTTP {exc.code}). Confira EFI_CLIENT_ID, EFI_CLIENT_SECRET '
+            f'e se EFI_AMBIENTE ({settings.EFI_AMBIENTE}) é o mesmo das chaves.'
+        )
+    except (urllib.error.URLError, OSError) as exc:
+        raise EfiError(f'Sem conexão com a Efí: {exc}')
     _token['valor'] = dados['access_token']
     _token['expira_em'] = time.time() + dados.get('expires_in', 600)
     return _token['valor']
@@ -61,5 +68,10 @@ def chamar(metodo, caminho, corpo=None):
     except urllib.error.HTTPError as exc:
         detalhe = exc.read().decode(errors='ignore')[:300]
         raise EfiError(f'Efí respondeu {exc.code} em {caminho}: {detalhe}')
-    dados = json.loads(conteudo) if conteudo else {}
+    except (urllib.error.URLError, OSError) as exc:
+        raise EfiError(f'Sem conexão com a Efí: {exc}')
+    try:
+        dados = json.loads(conteudo) if conteudo else {}
+    except ValueError:
+        raise EfiError(f'Resposta inesperada da Efí em {caminho}.')
     return dados.get('data', dados)

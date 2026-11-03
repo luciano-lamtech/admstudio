@@ -68,6 +68,9 @@ class GerarBoletoView(APIView):
         except (efi.EfiError, ValueError) as exc:
             logger.exception('Falha ao gerar boleto do pagador %s', pagador.pk)
             return Response({'detail': f'Não foi possível gerar o boleto agora. {exc}'}, status=502)
+        except Exception:
+            logger.exception('Erro inesperado ao gerar boleto do pagador %s', pagador.pk)
+            return Response({'detail': 'Erro inesperado ao gerar o boleto. Veja o log do servidor (procure por "Erro inesperado ao gerar boleto").'}, status=500)
         pagador.refresh_from_db()
         return _resposta(pagador)
 
@@ -86,6 +89,9 @@ class VerificarPagamentoView(APIView):
             except efi.EfiError as exc:
                 logger.exception('Falha ao consultar pagamento do pagador %s', pagador.pk)
                 return Response({'detail': f'Não foi possível consultar o pagamento agora. {exc}'}, status=502)
+            except Exception:
+                logger.exception('Erro inesperado ao consultar pagamento do pagador %s', pagador.pk)
+                return Response({'detail': 'Erro inesperado ao consultar o pagamento. Veja o log do servidor.'}, status=500)
             pagador.refresh_from_db()
         return _resposta(pagador)
 
