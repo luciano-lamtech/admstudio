@@ -27,6 +27,7 @@ class UnidadeNegocio(models.Model):
     pais = models.CharField(max_length=60, default='Brasil')
     endereco = models.CharField(max_length=200, blank=True)
     numero = models.CharField(max_length=10, blank=True)
+    complemento = models.CharField(max_length=60, blank=True)
     bairro = models.CharField(max_length=100, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
     estado = models.CharField(max_length=2, blank=True, help_text='UF, ex: SP')

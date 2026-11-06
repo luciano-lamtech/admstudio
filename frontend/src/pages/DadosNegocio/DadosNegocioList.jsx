@@ -3,7 +3,7 @@ import axiosClient from '../../api/axiosClient';
 
 const UNIDADE_VAZIA = {
   nome_empresa: '', nome_unidade: '', cnpj_cpf: '', nome_contato: '', telefone_contato: '',
-  email: '', telegram_id: '', cep: '', pais: 'Brasil', endereco: '', numero: '',
+  email: '', telegram_id: '', cep: '', pais: 'Brasil', endereco: '', numero: '', complemento: '',
   bairro: '', cidade: '', estado: '', status: 'em_analise',
 };
 
@@ -283,15 +283,20 @@ export default function DadosNegocioList() {
                     </div>
                   </div>
                   <div className="row g-2 mb-2">
-                    <div className="col-md-9">
+                    <div className="col-md-6">
                       <label className="form-label small">Endereço</label>
                       <input className="form-control" value={form.endereco}
                         onChange={(e) => setForm({ ...form, endereco: e.target.value })} />
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                       <label className="form-label small">Número</label>
                       <input className="form-control" value={form.numero}
                         onChange={(e) => setForm({ ...form, numero: e.target.value })} />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label small">Complemento</label>
+                      <input className="form-control" maxLength={60} placeholder="Sala, bloco, apto..." value={form.complemento || ''}
+                        onChange={(e) => setForm({ ...form, complemento: e.target.value })} />
                     </div>
                   </div>
                   <div className="row g-2 mb-2">

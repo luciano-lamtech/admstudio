@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axiosClient from '../../api/axiosClient';
 import { useAuth } from '../../context/AuthContext';
 
-const VAZIO = { cep: '', pais: 'Brasil', endereco: '', numero: '', bairro: '', cidade: '', estado: '' };
-const CAMPOS_OBRIGATORIOS = Object.keys(VAZIO);
+const VAZIO = { cep: '', pais: 'Brasil', endereco: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '' };
+// O complemento é opcional; todos os outros campos são obrigatórios.
+const CAMPOS_OBRIGATORIOS = Object.keys(VAZIO).filter((c) => c !== 'complemento');
 
 function formatarCep(valor) {
   const digitos = valor.replace(/\D/g, '').slice(0, 8);
@@ -126,15 +127,20 @@ export default function EnderecoObrigatorio() {
                 </div>
               </div>
               <div className="row g-2 mb-2">
-                <div className="col-md-9">
+                <div className="col-md-6">
                   <label className="form-label small fw-semibold">Endereço *</label>
                   <input className="form-control" required maxLength={150} value={form.endereco}
                     onChange={(e) => mudar('endereco', e.target.value)} />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <label className="form-label small fw-semibold">Número *</label>
                   <input className="form-control" required maxLength={10} placeholder="Ou S/N" value={form.numero}
                     onChange={(e) => mudar('numero', e.target.value)} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label small">Complemento</label>
+                  <input className="form-control" maxLength={60} placeholder="Sala, bloco, apto..." value={form.complemento}
+                    onChange={(e) => mudar('complemento', e.target.value)} />
                 </div>
               </div>
               <div className="row g-2 mb-2">

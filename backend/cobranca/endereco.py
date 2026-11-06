@@ -19,6 +19,7 @@ from core.models import Tenant
 from negocio.models import UnidadeNegocio
 
 NIVEL_GERENTE = 7
+COMPLEMENTO_MAX = 60  # tamanho de Pagador.complemento e UnidadeNegocio.complemento
 
 UFS = {
     'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
@@ -120,10 +121,13 @@ class EnderecoView(APIView):
 
         # Pré-preenche com o que já existir (unidade primeiro; Pagador para o que faltar).
         endereco = {c: (getattr(unidade, c, '') or '') if unidade else '' for c in CAMPOS}
+        endereco['complemento'] = (unidade.complemento if unidade else '') or ''
         if pagador is not None:
             for campo, campo_pagador in PARA_PAGADOR.items():
                 if _vazio(endereco[campo]):
                     endereco[campo] = getattr(pagador, campo_pagador) or ''
+            if _vazio(endereco['complemento']):
+                endereco['complemento'] = pagador.complemento or ''
         if _vazio(endereco['pais']):
             endereco['pais'] = 'Brasil'
 
@@ -139,8 +143,13 @@ class EnderecoView(APIView):
             return Response({'detail': 'Seu perfil não pode alterar o endereço.'}, status=403)
 
         limpo, erros = _validar(request.data)
+        # Complemento é opcional (apto, sala, bloco...), mas tem limite de tamanho.
+        complemento = str(request.data.get('complemento') or '').strip()
+        if len(complemento) > COMPLEMENTO_MAX:
+            erros['complemento'] = [f'Complemento: máximo de {COMPLEMENTO_MAX} caracteres.']
         if erros:
             return Response(erros, status=400)
+        limpo['complemento'] = complemento
 
         tenant = _tenant_do_token(request)
 
@@ -152,7 +161,7 @@ class EnderecoView(APIView):
                 cnpj_cpf=tenant.cnpj_cpf if tenant is not None else '', status='ativo',
             )
         for campo, valor in limpo.items():
-            setattr(unidade, campo, valor)
+            setattr(unidade, campo, valor)  # inclui o complemento
         unidade.save()
 
         # O boleto usa o endereço do Pagador. Só preenche se estiver incompleto, para não
@@ -161,6 +170,7 @@ class EnderecoView(APIView):
         if pagador is not None and faltando_no_pagador(pagador):
             for campo, campo_pagador in PARA_PAGADOR.items():
                 setattr(pagador, campo_pagador, limpo[campo])
-            pagador.save(update_fields=list(PARA_PAGADOR.values()))
+            pagador.complemento = limpo['complemento']
+            pagador.save(update_fields=list(PARA_PAGADOR.values()) + ['complemento'])
 
         return Response({'completo': True, 'faltando': []})

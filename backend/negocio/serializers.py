@@ -10,7 +10,7 @@ class UnidadeNegocioSerializer(serializers.ModelSerializer):
         model = UnidadeNegocio
         fields = [
             'id', 'nome_empresa', 'nome_unidade', 'cnpj_cpf', 'nome_contato', 'telefone_contato',
-            'email', 'telegram_id', 'cep', 'pais', 'endereco', 'numero', 'bairro',
+            'email', 'telegram_id', 'cep', 'pais', 'endereco', 'numero', 'complemento', 'bairro',
             'cidade', 'estado', 'status', 'status_display', 'created_at', 'tem_qrcode_geral',
         ]
 
