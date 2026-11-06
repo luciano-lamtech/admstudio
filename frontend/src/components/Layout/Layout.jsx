@@ -1,4 +1,5 @@
 import AvisoAssinatura from '../AvisoAssinatura/AvisoAssinatura';
+import EnderecoObrigatorio from '../EnderecoObrigatorio/EnderecoObrigatorio';
 import React from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
@@ -12,6 +13,7 @@ export default function Layout({ children }) {
         <AvisoAssinatura />
         <main className="p-4">{children}</main>
       </div>
+      <EnderecoObrigatorio />
     </div>
   );
 }

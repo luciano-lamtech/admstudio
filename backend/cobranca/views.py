@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from accounts.permissions import criar_permissao, nivel_do_token
 from core.models import Pagador, Tenant
 from . import efi
+from .endereco import endereco_do_pagador_incompleto
 from .servico import garantir_boleto, resumo_pagador, sincronizar_pagador
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,11 @@ class GerarBoletoView(APIView):
         pagador = _pagador_do_token(request)
         if pagador is None:
             return Response({'detail': 'Nenhuma assinatura vinculada a este estabelecimento.'}, status=404)
+        if endereco_do_pagador_incompleto(pagador):
+            return Response({
+                'detail': 'Cadastre o endereço completo do seu negócio para gerar o boleto.',
+                'codigo': 'endereco_incompleto',
+            }, status=400)
         try:
             garantir_boleto(pagador)
         except (efi.EfiError, ValueError) as exc:
