@@ -106,7 +106,7 @@ export default function EnderecoObrigatorio() {
           <form onSubmit={salvar}>
             <div className="modal-body">
               <div className="alert alert-warning py-2 small">
-                Para continuar, informe o endereço completo. Ele é obrigatório para emitir o boleto da sua assinatura.
+                Para continuar, informe o endereço completo.
               </div>
               {erro && <div className="alert alert-danger py-2 small">{erro}</div>}
 
