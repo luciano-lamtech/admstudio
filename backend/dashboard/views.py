@@ -1,5 +1,4 @@
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 from django.db.models import Count, Sum
@@ -9,8 +8,7 @@ from rest_framework.response import Response
 from clientes.models import Cliente
 from agendamentos.models import Agendamento
 from financeiro.models import Lancamento
-
-FUSO = ZoneInfo('America/Sao_Paulo')
+from configuracoes.fuso import fuso_atual
 
 STATUS_CLIENTE = [
     ('ativo', 'Ativo'),
@@ -36,7 +34,7 @@ class DashboardResumoView(APIView):
     """
 
     def get(self, request):
-        hoje = timezone.now().astimezone(FUSO).date()
+        hoje = timezone.now().astimezone(fuso_atual()).date()
 
         # ---- Clientes ----
         clientes = Cliente.objects.all()

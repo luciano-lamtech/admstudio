@@ -1,17 +1,15 @@
 from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
-from zoneinfo import ZoneInfo
 
 from django.db.models import Sum
 from django.utils import timezone
 
 from .models import ConfiguracaoFidelidade, MovimentoCashback
-
-FUSO = ZoneInfo('America/Sao_Paulo')
+from configuracoes.fuso import fuso_atual
 
 
 def _hoje():
-    return timezone.now().astimezone(FUSO).date()
+    return timezone.now().astimezone(fuso_atual()).date()
 
 
 def configuracao():

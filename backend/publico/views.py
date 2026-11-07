@@ -1,9 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.utils import timezone
-from zoneinfo import ZoneInfo
 
-FUSO = ZoneInfo('America/Sao_Paulo')
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -13,6 +11,7 @@ from catalogo.models import ItemCatalogo
 from profissionais.models import Profissional
 from clientes.models import Cliente
 from agendamentos.models import Agendamento, AgendamentoItem
+from configuracoes.fuso import fuso_atual
 
 HORA_INICIO = 8
 HORA_FIM = 20
@@ -86,8 +85,8 @@ class HorariosDisponiveisView(TenantPublicAPIView):
             ) or 30
             intervalos.append((ag.data_hora, ag.data_hora + timedelta(minutes=dur)))
 
-        inicio_expediente = datetime(data.year, data.month, data.day, HORA_INICIO, tzinfo=FUSO)
-        fim_expediente = datetime(data.year, data.month, data.day, HORA_FIM, tzinfo=FUSO)
+        inicio_expediente = datetime(data.year, data.month, data.day, HORA_INICIO, tzinfo=fuso_atual())
+        fim_expediente = datetime(data.year, data.month, data.day, HORA_FIM, tzinfo=fuso_atual())
 
         horarios = []
         atual = inicio_expediente
@@ -126,7 +125,7 @@ class AgendarPublicoView(TenantPublicAPIView):
             return Response({'detail': 'Serviço inválido.'}, status=400)
 
         try:
-            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%d %H:%M').replace(tzinfo=FUSO)
+            data_hora = datetime.strptime(data_hora_str, '%Y-%m-%d %H:%M').replace(tzinfo=fuso_atual())
         except ValueError:
             return Response({'detail': 'Data/hora inválida.'}, status=400)
 
@@ -196,7 +195,7 @@ class ConsultarPublicoView(TenantPublicAPIView):
         if not telefone:
             return Response({'detail': 'Informe o telefone.'}, status=400)
 
-        inicio_hoje = timezone.now().astimezone(FUSO).replace(hour=0, minute=0, second=0, microsecond=0)
+        inicio_hoje = timezone.now().astimezone(fuso_atual()).replace(hour=0, minute=0, second=0, microsecond=0)
         agendamentos = (
             Agendamento.objects.filter(cliente__telefone=telefone, data_hora__gte=inicio_hoje)
             .exclude(status='cancelado')
@@ -207,7 +206,7 @@ class ConsultarPublicoView(TenantPublicAPIView):
 
         dados = [{
             'id': ag.id,
-            'data_hora': timezone.localtime(ag.data_hora, FUSO).strftime('%Y-%m-%d %H:%M'),
+            'data_hora': timezone.localtime(ag.data_hora, fuso_atual()).strftime('%Y-%m-%d %H:%M'),
             'status': ag.status,
             'status_display': ag.get_status_display(),
             'profissional_nome': ag.profissional.nome if ag.profissional else 'Sem profissional definido',
@@ -228,7 +227,7 @@ class CancelarPublicoView(TenantPublicAPIView):
         agendamento_id = request.data.get('agendamento_id')
         telefone = (request.data.get('telefone') or '').strip()
 
-        inicio_hoje = timezone.now().astimezone(FUSO).replace(hour=0, minute=0, second=0, microsecond=0)
+        inicio_hoje = timezone.now().astimezone(fuso_atual()).replace(hour=0, minute=0, second=0, microsecond=0)
         try:
             agendamento = Agendamento.objects.get(
                 pk=agendamento_id, cliente__telefone=telefone, data_hora__gte=inicio_hoje,

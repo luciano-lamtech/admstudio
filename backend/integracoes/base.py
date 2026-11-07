@@ -1,5 +1,4 @@
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -9,8 +8,6 @@ from rest_framework import status
 from core.models import Tenant
 from authentication.utils import register_tenant_connection
 from authentication.middleware import set_current_tenant_alias
-
-FUSO = ZoneInfo('America/Sao_Paulo')
 
 
 class IntegracaoAPIView(APIView):

@@ -4,7 +4,8 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from .base import IntegracaoAPIView, FUSO
+from configuracoes.fuso import fuso_atual
+from .base import IntegracaoAPIView
 from .mensagens import texto_lembrete, texto_confirmado, texto_cancelado, texto_automatico
 from agendamentos.models import Agendamento
 from historico.service import registrar_status
@@ -37,8 +38,8 @@ class LembretesAmanhaView(IntegracaoAPIView):
             return Response({'detail': 'Este assinante não tem instância de WhatsApp ativa.'},
                             status=status.HTTP_409_CONFLICT)
 
-        agora = timezone.now().astimezone(FUSO)
-        inicio_amanha = datetime(agora.year, agora.month, agora.day, tzinfo=FUSO) + timedelta(days=1)
+        agora = timezone.now().astimezone(fuso_atual())
+        inicio_amanha = datetime(agora.year, agora.month, agora.day, tzinfo=fuso_atual()) + timedelta(days=1)
         inicio_depois = inicio_amanha + timedelta(days=1)
 
         qs = (
@@ -58,7 +59,7 @@ class LembretesAmanhaView(IntegracaoAPIView):
         for ag in qs:
             if not ag.cliente.telefone:
                 continue
-            local = ag.data_hora.astimezone(FUSO)
+            local = ag.data_hora.astimezone(fuso_atual())
             itens.append({
                 'agendamento_id': ag.id,
                 'telefone': _telefone_whatsapp(ag.cliente.telefone),

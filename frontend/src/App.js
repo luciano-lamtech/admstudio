@@ -17,6 +17,7 @@ import RelatoriosHub from './pages/Relatorios/RelatoriosHub';
 import RelatorioComissao from './pages/Relatorios/RelatorioComissao';
 import ConfiguracoesHub from './pages/Configuracoes/ConfiguracoesHub';
 import DadosNegocioList from './pages/DadosNegocio/DadosNegocioList';
+import PreferenciasSistemaPage from './pages/Configuracoes/PreferenciasSistemaPage';
 import UsuariosList from './pages/Usuarios/UsuariosList';
 import EstoqueList from './pages/Estoque/EstoqueList';
 import PacotesList from './pages/Pacotes/PacotesList';
@@ -29,7 +30,6 @@ import RedefinirSenhaPage from './pages/Senha/RedefinirSenhaPage';
 import AssinaturaPage from './pages/Assinatura/AssinaturaPage';
 import ClienteCashbackPage from './pages/Fidelidade/ClienteCashbackPage';
 import ClientePacotesPage from './pages/Pacotes/ClientePacotesPage';
-import PlaceholderPage from './components/PlaceholderPage/PlaceholderPage';
 import ChatbotPublico from './pages/ChatbotPublico/ChatbotPublico';
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -133,7 +133,7 @@ export default function App() {
         <PrivateRoute><DadosNegocioList /></PrivateRoute>
       } />
       <Route path="/configuracoes/preferencias" element={
-        <PrivateRoute><PlaceholderPage titulo="Preferências do Sistema" icone="bi-sliders" /></PrivateRoute>
+        <PrivateRoute><PreferenciasSistemaPage /></PrivateRoute>
       } />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/historico/', include('historico.urls')),
     path('api/pacotes/', include('pacotes.urls')),
     path('api/fidelidade/', include('fidelidade.urls')),
+    path('api/configuracoes/', include('configuracoes.urls')),
     path('api/assinatura/', include('cobranca.urls')),
     path('api/cobranca/', include('cobranca.urls_ciclo')),
 

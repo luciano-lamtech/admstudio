@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'historico',       # log de alterações dos agendamentos (por tenant)
     'pacotes',         # pacotes de sessões e planos (por tenant)
     'fidelidade',      # programa de cashback (por tenant)
+    'configuracoes',   # preferências do sistema: fuso horário e link do robô (por tenant)
     'cobranca',        # cobrança de assinantes via Efí (central)     # prontuário do cliente (por tenant)         # API pública do chatbot de agendamento (sem login)
 ]
 

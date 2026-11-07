@@ -3,11 +3,9 @@ Registra no histórico do cliente cada mudança feita num agendamento.
 É chamado a partir do salvamento do agendamento, então cobre qualquer origem:
 tela do sistema, chatbot público e resposta do WhatsApp.
 """
-from zoneinfo import ZoneInfo
 
 from .models import EventoHistorico
-
-FUSO = ZoneInfo('America/Sao_Paulo')
+from configuracoes.fuso import fuso_atual
 
 STATUS_LABEL = {
     'agendado': 'Agendado',
@@ -23,7 +21,7 @@ def _money(valor):
 
 
 def _dt(dt):
-    return dt.astimezone(FUSO).strftime('%d/%m/%Y %H:%M')
+    return dt.astimezone(fuso_atual()).strftime('%d/%m/%Y %H:%M')
 
 
 def _label_item(tipo_item):

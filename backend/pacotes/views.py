@@ -1,5 +1,4 @@
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -13,8 +12,7 @@ from clientes.models import Cliente
 from financeiro.models import Lancamento
 from .models import Pacote, ClientePacote, UsoPacote
 from .serializers import PacoteSerializer
-
-FUSO = ZoneInfo('America/Sao_Paulo')
+from configuracoes.fuso import fuso_atual
 
 # Catálogo de pacotes: leitura para todos; configurar a partir de Gerente (7)
 PermissaoPacote = criar_permissao(1, 7)
@@ -24,7 +22,7 @@ PermissaoLeitura = criar_permissao(1)
 
 
 def _hoje():
-    return timezone.now().astimezone(FUSO).date()
+    return timezone.now().astimezone(fuso_atual()).date()
 
 
 def _dados(cp):
